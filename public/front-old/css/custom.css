@@ -1,0 +1,313 @@
+/* ==============================
+   PROFILE COVER SECTION
+============================== */
+
+.profile-cover-section {
+    background: #f7f7fa;
+    margin-top: 40px;
+    padding-bottom: 30px;
+}
+
+/* Cover collage */
+.cover-collage {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    height: 260px;
+    overflow: hidden;
+}
+
+.cover-collage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Dark overlay */
+.cover-collage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.5) 0%,
+        rgba(0,0,0,0.3) 40%,
+        rgba(0,0,0,0.7) 100%
+    );
+}
+
+/* Profile info overlapping effect */
+.profile-info-wrapper {
+    margin-top: -80px;
+    position: relative;
+    z-index: 2;
+    color: #0b0b0b;
+}
+
+.profile-info-wrapper a {
+    color: #212121;
+}
+
+.profile-info-wrapper h2,
+.big-activity-count {
+    text-shadow: 0 3px 8px rgba(0,0,0,0.4);
+}
+
+/* Profile image */
+.profile-image-box img {
+    width: 130px;
+    height: 130px;
+    border-radius: 20px;
+    border: 6px solid #fff;
+    object-fit: cover;
+}
+
+/* Subscriber badge */
+.subscriber-badge {
+    background: #ffcc00;
+    color: #000;
+    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+/* Big number */
+.big-activity-count {
+    font-size: 60px;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+}
+
+/* ==============================
+   PROFILE TABS
+============================== */
+
+.profile-tabs {
+    display: flex;
+    gap: 30px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.profile-tabs a {
+    text-decoration: none;
+    color: #555;
+    font-weight: 500;
+    padding-bottom: 8px;
+}
+
+.profile-tabs a.active {
+    color: #000;
+    border-bottom: 3px solid #fc5200;
+}
+
+/* ==============================
+   ACTIVITY CARD
+============================== */
+
+.activity-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+.stat-value {
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: #777;
+}
+
+/* Map box */
+
+.map-box,
+.map-placeholder {
+    height: 260px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* ==============================
+   MEDIA GRID
+============================== */
+
+.photo-grid img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.media-thumb {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.media-thumb::after {
+    content: "";
+    display: block;
+    padding-bottom: 100%;
+}
+
+.media-thumb img,
+.media-thumb video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+/* ==============================
+   ACTIVITY CALENDAR
+============================== */
+
+.activity-calendar {
+    margin-top: 20px;
+}
+
+.calendar-header {
+    display: grid;
+    grid-template-columns: repeat(7, 26px);
+    gap: 12px;
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 10px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 26px);
+    grid-auto-rows: 26px;
+    gap: 12px;
+}
+
+.calendar-day {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 26px;
+    width: 26px;
+}
+
+.day-dot {
+    border-radius: 50%;
+    background: #fc4c02;
+    transition: 0.2s ease;
+}
+
+.day-dot.empty {
+    width: 6px;
+    height: 6px;
+    background: #2c2c2c;
+}
+
+.day-dot.no-distance {
+    width: 0px;
+    height: 6px;
+    background: #2c2c2c;
+}
+
+.calendar-day:hover .day-dot {
+    transform: scale(1.2);
+}
+
+.day-label {
+    position: absolute;
+    font-size: 11px;
+    color: #000;
+    display: none;
+}
+
+/* ==============================
+   LEGENDS TABLE
+============================== */
+
+.legends-table {
+    background: #fff;
+}
+
+.legends-table thead {
+    background: #f5f5f5;
+    font-size: 14px;
+    color: #555;
+}
+
+.legends-table th {
+    font-weight: 600;
+    border-bottom: 1px solid #ddd;
+}
+
+.legends-table td {
+    padding: 14px 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+.legends-table tbody tr:hover {
+    background: #fafafa;
+}
+
+.legend-link {
+    color: #0073e6;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.legend-link:hover {
+    text-decoration: underline;
+}
+
+/* ==============================
+   STATS TABLE
+============================== */
+
+.stats-title {
+    padding: 12px;
+    font-size: 18px;
+    margin: 0;
+}
+
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.stats-table td {
+    padding: 8px 12px;
+    font-size: 14px;
+    border-top: 1px solid #e5e5e5;
+}
+
+.section-title td {
+    background: #fafafa;
+    font-weight: bold;
+    font-size: 14px;
+    padding-top: 14px;
+}
+
+.value {
+    background: #f0f0f0;
+    text-align: right;
+    font-weight: 600;
+}
+
+.link {
+    color: #007fbf;
+    cursor: pointer;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
