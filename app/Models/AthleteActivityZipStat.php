@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 class AthleteActivityZipStat extends Model
 {
-     protected $fillable = [
+    use SoftDeletes;
+    protected $fillable = [
         'athlete_activity_id',
         'athlete_id',
         'zip_code',
@@ -16,6 +17,12 @@ class AthleteActivityZipStat extends Model
         'moving_sec',
         'speed_mph',
         'max_speed_mph',
+        'distance_mi_up',
+        'distance_mi_down',
+        'speed_mph_up',
+        'speed_mph_down',
+        'sort_order',
+        'sort_order_down',
         'rank',
         'date'
     ];

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
@@ -24,12 +24,27 @@ class AthleteController extends Controller
                 ->addColumn('name', function (Athlete $athlete) {
                     return $athlete->first_name?$athlete->first_name.' '.$athlete->last_name:'-' ; 
                 })
-                ->addColumn('action', function (Athlete $athlete) {
-                    $actions = '<div class="d-flex"><div class="dropdown">';
-                    $actions .= '<a href="' . route('admin.athlete-activity.index',['athlete'=> $athlete->id]). '" class="btn btn-sm btn-clean btn-icon text-end" title="Athlete Activities"><i class="bi bi-card-checklist"></i></a>';
-                    $actions .= '</div></div>';
-                    return $actions;
-                })
+                    ->addColumn('action', function ($row) {
+                        return '
+                            <div class="d-flex align-items-center gap-1">
+                                
+                                <a href="'.route('account.activity.show', $row->id).'" class="btn btn-primary btn-sm ">
+                                    View
+                                </a>
+                    
+                                <a class="btn btn-dark btn-sm map-btn open-map-drawer" data-id="'.$row->id.'" >
+                                    <i class="bi bi-map"></i>
+                                </a>
+                    
+                            </div>
+                        ';
+                    }) 
+                // ->addColumn('action', function (Athlete $athlete) {
+                //     $actions = '<div class="d-flex"><div class="dropdown">';
+                //     $actions .= '<a href="' . route('admin.athlete-activity.index',['athlete'=> $athlete->id]). '" class="btn btn-sm btn-clean btn-icon text-end" title="Athlete Activities"><i class="bi bi-card-checklist"></i></a>';
+                //     $actions .= '</div></div>';
+                //     return $actions;
+                // })
                 ->rawColumns(['action','profile'])
                 ->make(true);
         }

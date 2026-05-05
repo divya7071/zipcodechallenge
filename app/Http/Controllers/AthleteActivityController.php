@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ActivityFetchCompleted;
 use App\Jobs\SyncAthleteStravaActivity;
 use App\Models\ActivityZipStat;
 use App\Models\Athlete;
@@ -14,6 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Traits\ZipIntersectionTrait;
+use Mpdf\Tag\A;
 
 class AthleteActivityController extends Controller
 {
@@ -21,8 +23,7 @@ class AthleteActivityController extends Controller
     use StravaHelper,ZipIntersectionTrait;
     public function index(Request $request, Datatables $datatables)
     {   
-
-    
+       //event(new ActivityFetchCompleted('fetching', auth('athlete')->id()));
         if($request->ajax()){
            
                 $query = AthleteActivity::where('athlete_id', auth('athlete')->user()->id)
@@ -69,33 +70,54 @@ class AthleteActivityController extends Controller
                 ->editColumn('elevation',function ($row) {
                     return  ($row->elevation > 0 ? number_format($row->elevation) : '-');
                 })
-               ->addColumn('zips', function ($row) {
-                    if (empty($row->passed_zips)) return '—';
+             ->addColumn('zips', function ($row) {
+                    
 
                     $zips = json_decode($row->passed_zips, true);
 
-                    if (!is_array($zips)) return '—';
+                       if (!is_array($zips)) {
+                             return '<span class="text-warning">Finding passed zips...</span>';
+                        }
+                        if (is_array($zips)&&empty($zips)) {
+                            return '-';
+                        }
+                        if (empty($row->passed_zips)) return '—';
 
                     return collect($zips)->map(fn ($z) =>
                         '<span class="badge bg-light text-dark me-1">'.$z.'</span>'
                     )->implode('');
                 })
-
-                ->addColumn('action', function ($row) {
-                    return '
-                        <a href="'.route('activity.show',$row->id).'" class="btn btn-sm btn-outline-dark">
-                            View
-                        </a>
-                        <a class="btn btn-sm btn-outline-dark open-map-drawer" data-id="'.$row->id.'">
-                            <i class="fa-regular fa-map" style="color:#c84f5c;"></i>
-                        </a>';
+                  ->addColumn('action', function ($row) {
+                        return '
+                            <div class="d-flex align-items-center gap-1">
+                                
+                                <a href="'.route('account.activity.show', $row->id).'" class="btn btn-primary btn-sm ">
+                                    View
+                                </a>
+                    
+                                <a class="btn btn-dark btn-sm map-btn open-map-drawer" data-id="'.$row->id.'" >
+                                    <i class="bi bi-map"></i>
+                                </a>
+                    
+                            </div>
+                        ';
+                    })                 
+                // ->addColumn('action', function ($row) {
+                //     return '
+                //         <a href="'.route('account.activity.show',$row->id).'" class="btn">
+                //             View
+                //         </a>
+                //         <a class="map-btn btn open-map-drawer" data-id="'.$row->id.'">
+                //         <i class="bi bi-map" style="color:#FFFF;"></i>
+                          
+                //         </a>';
                   
-                })
+                // })
                 ->rawColumns(['sport_type','zips','action'])
                 ->make(true);
         } 
         
-        return view('activity.index', [
+        return view('account.activity.index', [
             'hasActivities' => AthleteActivity::where('athlete_id', auth('athlete')->id())->exists(),
             'syncedAt' => auth('athlete')->user()->strava_synced_at,
             'shouldSync' => is_null(auth('athlete')->user()->strava_synced_at),
@@ -107,7 +129,7 @@ class AthleteActivityController extends Controller
     public function mapView(Request $request){
        
         $activity = AthleteActivity::with('activity_map')->whereId($request->activityId)->first();
-        $html =  view('activity.map-info', compact('activity'))->render();
+        $html =  view('account.activity.map-info', compact('activity'))->render();
         $return_array['status'] = true;
         $return_array['html'] = $html;
         $return_array['activity'] = $activity;
@@ -119,7 +141,34 @@ class AthleteActivityController extends Controller
     public function show(AthleteActivity $activity)
     {
         $polyline =$activity->activity_map?json_decode($activity->activity_map->map)->summary_polyline:'';
-
+        $upSegments = $activity->passedZips
+            ->filter(fn($row) => !is_null($row->sort_order))
+            ->sortBy('sort_order')
+            ->values()
+            ->map(function ($row) {
+                return [
+                    'zip' => $row->zip_code,
+                    'sort_order' => $row->sort_order,
+                    'direction' => 'up',
+                    'distance_mi' => $row->distance_mi_up,
+                    'speed_mph' => $row->speed_mph_up,
+                    'elapsed_sec' => $row->elapsed_sec,
+                ];
+            });
+         $downSegments = $activity->passedZips
+            ->filter(fn($row) => !is_null($row->sort_order_down))
+            ->sortBy('sort_order_down')
+            ->values()
+            ->map(function ($row) {
+                return [
+                    'zip' => $row->zip_code,
+                    'sort_order_down' => $row->sort_order_down,
+                    'direction' => 'down',
+                    'distance_mi' => $row->distance_mi_down,
+                    'speed_mph' => $row->speed_mph_down,
+                    'elapsed_sec' => $row->elapsed_sec,
+                ];
+            });   
         $geojson = [
             'type' => 'FeatureCollection',
             'features' => []
@@ -128,9 +177,14 @@ class AthleteActivityController extends Controller
         if ($polyline) {
             $geojson = $this->extractNearbyFeatures($polyline, 30);
         }
-        return view('activity.activity-detail', [
+        return view('account.activity.activity-detail', [
             'activity' => $activity,
-            'zips' => $geojson
+            'zips' => $geojson,
+            'upSegments' => $upSegments,
+            'downSegments' =>$downSegments,
+            'startZip' => $upSegments->first()['zip'] ?? null,
+            'turnZip' => $upSegments->last()['zip'] ?? null,
+            'endZip'   => $downSegments->last()['zip'] ?? $upSegments->first()['zip'] ?? null
         ]);
     }
     protected function extractNearbyFeatures(string $polyline, int $bufferKm = 30): array
@@ -226,7 +280,7 @@ class AthleteActivityController extends Controller
         //         $effort->rank = $rank !== false ? $rank + 1 : null;
         //     }
     
-            return view('activity.activity-detail', [
+            return view('account.activity.activity-detail', [
             'activity' => $activity
             ]);
        
@@ -314,7 +368,7 @@ class AthleteActivityController extends Controller
             ->take(10)
             ->get();
 
-        $html = view('account.activity-more', compact('activities'))->render();
+        $html = view('account.partials.activity-more', compact('activities'))->render();
 
         return response()->json([
             'status' => true,
@@ -354,7 +408,7 @@ class AthleteActivityController extends Controller
         ->orderByDesc('total_passes')
         ->first();
 
-        return view('activity.segment-details', compact('zip'));
+        return view('account.activity.segment-details', compact('zip'));
     }
     public function media($id)
     {
@@ -407,7 +461,7 @@ class AthleteActivityController extends Controller
         //      }
                
         // }
-       return view('activity.activity-calendar');
+       return view('account.activity.activity-calendar');
    }
 
 
@@ -433,7 +487,7 @@ class AthleteActivityController extends Controller
                 ->format('Y-m-d');
         });
 
-        return view('activity.activity-weeks', compact('weeks'))->render();
+        return view('account.activity.activity-weeks', compact('weeks'))->render();
     }
     public function mapBbox(Request $request)
     {

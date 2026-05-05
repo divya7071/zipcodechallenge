@@ -1024,7 +1024,8 @@ line-height: 45px;
 .breadcrumb-area {
 background-size: cover;
 position: relative;
-    min-height: 450px;
+    /*min-height: 450px;*/
+    min-height:150px;
     background-repeat: no-repeat;
     background-color: #000;
 }
@@ -8882,7 +8883,7 @@ margin-bottom: 10px;
   color: #fff;
     font-size: 70px;
 }
-.progress-outer li{
+/* .progress-outer li{
     padding-left: 100px;
 }
 .progress-outer li:first-child{
@@ -9008,7 +9009,7 @@ text-align: center;
 }
 .progress.green .progress-left .progress-bar{
     animation: loading-5 1.2s linear forwards 1.8s;
-}
+} */
 @keyframes loading-1{
     0%{
         -webkit-transform: rotate(0deg);
@@ -9059,9 +9060,9 @@ text-align: center;
         transform: rotate(126deg);
     }
 }
-@media only screen and (max-width: 990px){
+/* @media only screen and (max-width: 990px){
     .progress{ margin-bottom: 20px; }
-}
+} */
 
 .conunter-img {
     margin-left: -400px;
@@ -10168,7 +10169,7 @@ blockquote footer {
     padding-left: 20px;
 }
 /* 16. pagination */
-.pagination {
+/*.pagination {
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: block;
@@ -10232,7 +10233,7 @@ blockquote footer {
 .pagination-wrap .pagination li a:hover {
 	color: #ffffff;
 	background: #fc5200;
-}
+}*/
 /* 17. f-cta */
 .f-cta-area {
 	background: #fff;
@@ -10840,4 +10841,106 @@ color: #fff;
 }
 .footer-top.wpding {
     background: #010c26;
+}
+
+
+/* Pagination */
+
+/* Pagination Container */
+.pagination {
+    gap: 6px;
+}
+
+/* Page buttons */
+.page-link {
+    border: 1px solid #e6e9ef;
+    color: #0c2957;
+    font-size: 13px;
+    border-radius: 6px !important;
+    padding: 6px 12px;
+    transition: all 0.2s ease;
+}
+
+/* Hover */
+.page-link:hover {
+    background: rgba(252,82,0,0.08);
+    color: #fc5200;
+    border-color: #fc5200;
+}
+
+/* Active page */
+.page-item.active .page-link {
+    background: #fc5200;
+    border-color: #fc5200;
+    color: #fff;
+}
+
+/* Disabled */
+.page-item.disabled .page-link {
+    color: #ccc;
+    background: #f8f9fa;
+}
+
+/* Remove ugly focus glow */
+.page-link:focus {
+    box-shadow: none;
+}
+
+/* DataTables wrapper fix */
+.dataTables_wrapper .dataTables_paginate {
+    margin-top: 10px;
+}
+
+.dataTables_wrapper .pagination {
+    justify-content: flex-end;
+}
+
+/* Remove default styles */
+.dataTables_wrapper .paginate_button {
+    padding: 0 !important;
+    border: none !important;
+    margin: 0 !important;
+}
+
+/* Fix buttons */
+.dataTables_wrapper .paginate_button a {
+    border-radius: 6px !important;
+}
+
+/* Scroll Bar */
+
+/* Chrome, Edge, Safari */
+*::-webkit-scrollbar {
+    width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: #f1f3f6;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: #fc5200ba;
+    border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: #fc5200;
+}
+
+/* Sidebar scrollbar */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #fc5200ba;
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: #fc5200;
 }

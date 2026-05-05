@@ -1,751 +1,941 @@
-@extends('layouts.app') 
-   
-@section('content')
+@extends('layouts.app')
 
+@section('content')
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css"> -->
+<style>
+    .walk {
+        color: #13e9e2;
+    }
+
+    .run {
+        color: #f4b942;
+    }
+
+    .ride {
+        color: #e5533d;
+    }
+
+    .cy_count_box {
+        width: 100%;
+        float: left;
+        margin-top: 45px;
+    }
+
+    .cy_count_box h1.cy_counter_num {
+        color: #ffffff;
+        margin: 25px 0px 10px;
+        font-size: 30px;
+        font-weight: 900;
+    }
+
+    .cy_count_box p {
+        font-size: 18px;
+        color: #ffffff;
+        margin: 0px;
+        text-transform: uppercase;
+    }
+
+    .hero-hook {
+        font-size: 16px;
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.6;
+        margin-bottom: 32px;
+        font-style: italic;
+        border-left: 3px solid #E84B1A;
+        padding-left: 14px;
+    }
+
+    .card-accent {
+        display: inline-block;
+        width: 32px;
+        height: 4px;
+        border-radius: 0;
+        margin-bottom: 14px;
+    }
+
+    .table-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .zip-table {
+        margin-bottom: 0px;
+    }
+
+    .zip-table th {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .zip-table td {
+        padding: 10px 12px;
+        border-bottom: 0.5px solid var(--color-border-tertiary);
+        color: var(--color-text-primary);
+    }
+
+    .zip-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .zip-table tr:first-child th {
+        border-top: none;
+    }
+
+    .btn {
+        padding: 15px 30px;
+    }
+
+    .view-btn {
+        background: #E84B1A;
+        color: #fff;
+        border: none;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .view-btn:hover {
+        background: #E84B1A;
+        color: #fff;
+    }
+
+    .services-box07 .sr-contner .icon {
+        margin-right: 18px;
+    }
+
+    .sr-tw-ul li .icon-right,
+    .sr-tw-ul li .icon {
+        width: 140px;
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        padding: 15px;
+        background: #fc5200;
+        color: white;
+    }
+
+    .about-content li .text {
+        flex: 3;
+        padding: 15px;
+    }
+
+    .sr-tw-ul li {
+        padding: 0px;
+    }
+
+    .sr-tw-ul li .icon-right h1,
+    .sr-tw-ul li .icon h1 {
+        margin: 0px;
+        padding: 0px;
+        font-size: 36px;
+        color: #FFFFFF;
+    }
+
+    .cy_count_box p.cta-area-desc {
+        color: #e7e7e7;
+        font-size: 14px;
+        text-transform: unset;
+    }
+
+    .what-happens .services-box07 .sr-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .what-happens .services-box07 .sr-container .icon {
+        width: unset;
+        margin-right: 0;
+        margin-bottom: 18px;
+    }
+
+    .what-happens .services-box07 .sr-container .icon img {
+        width: 120px;
+    }
+
+    .walk-ride .faq-img {
+        background-color: #fc5200;
+    }
+
+    .how-it-works .services-box07 {
+        padding: 30px;
+    }
+
+    .how-it-works .services-box07 .sr-container {
+        display: flex;
+    }
+
+    .how-it-works .services-box07 .sr-container .icon {
+        flex: 1;
+        padding-right: 10px;
+    }
+
+    .how-it-works .services-box07 .sr-container .text {
+        flex: 3;
+        padding-left: 10px;
+    }
+
+    .copyright-wrap .container {
+        padding: 10px 0;
+    }
+</style>
 <main>
     <!-- slider-area -->
     <section id="home" class="slider-area fix p-relative">
-        
-        <div class="slider-active" style="background: #00173c;">
-        <div class="single-slider slider-bg d-flex slider-bg-three align-items-center" style="background-image: url('{{ url('front/img/slider/slider_bg_01.png') }}');" background-size: cover;">
+        <div class="slider-active" style="background: #eeeeee;">
+            <div class="single-slider slider-bg d-flex slider-bg-three align-items-center"
+                style="background-image: url('{{ url('front/img/events/14.jpg') }}');" background-size: cover;">
                 <div class="container">
                     <div class="row justify-content-center align-items-center">
-                        
                         <div class="col-lg-7 col-md-7">
                             <div class="slider-content s-slider-content mt-20">
-                                    <h5 data-animation="fadeInUp" data-delay=".4s">welcome To Zipcode Challenge</h5>
-                                    <h2 data-animation="fadeInUp" data-delay=".4s">Join the movement - moving with purpose, one ZIP code at a time</h2>
-                                <p data-animation="fadeInUp" data-delay=".6s">DA simple movement challenge that turns everyday activity into exploration—helping you get outdoors, discover new ZIP codes, and reconnect with the places you travel through.</p>
-                                
-                                    <div class="slider-btn mt-30 mb-105">     
-                                    <a href="{{route('contact')}}" class="btn ss-btn mr-15" data-animation="fadeInLeft" data-delay=".4s">Discover More <i class="fal fa-angle-right"></i></a>
-                                    
-                                </div>        
-                                                                        
+                                <h5 data-animation="fadeInUp" data-delay=".4s">welcome To Zipcode Challenge</h5>
+                                <h2 data-animation="fadeInUp" data-delay=".4s">Turn your movement into a ZIP code story
+                                </h2>
+                                <p data-animation="fadeInUp" data-delay=".6s">Walk, run, or ride with purpose—then see
+                                    the ZIP codes your journey has touched. Zipcode Challenge helps you explore more,
+                                    reflect more, and turn everyday activity into something meaningful.</p>
+                                <div class="text mt-4">
+                                    <p class="hero-hook" data-animation="fadeInUp" data-delay=".6s">Every activity
+                                        becomes a story. Every ZIP code becomes a memory.</p>
+                                </div>
+                                @if(!auth('athlete')->check())
+                                <div class="slider-btn mt-30 mb-30">
+                                    <a href="{{route('athlete.strava.login')}}" class="btn ss-btn p-0" data-animation="fadeInLeft"
+                                        data-delay=".4s"><img src="{{ url("front/img/strava-connect/btn_strava_connect_with_orange.png")}}" alt=""></a>
+                                    <span class="ms-4 text-white">Takes less than 10 seconds</span>
+
+                                </div>
+                                @else
+                                <div class="slider-btn mt-30 mb-30">
+                                    <a href="{{auth('athlete')->check()?route('account.dashboard'):route('athlete.strava.login')}}" class="btn ss-btn smoth-scroll">See your data <i
+                                            class="fal fa-angle-right"></i></a>
+                                    <span class="ms-4 text-white">Takes less than 10 seconds</span>
+
+                                </div>
+
+                                @endif
+
+
                             </div>
                         </div>
                         <div class="col-lg-5 col-md-5 p-relative">
                         </div>
-                        
+
                     </div>
                 </div>
-                            <!-- video -->
-                <!-- <video id="my-video" class="video2" muted loop autoplay>
-                <source src="{{ url("front/img/slider/slider-vedio.mp4")}}" type="video/mp4">
-                <source src="{{ url("front/img/slider/slider-vedio.html")}}" type="video/ogg">
-                <source src="{{ url("front/img/slider/slider-vedio-2.html")}}" type="video/webm">
-            </video> -->
+                <!-- video -->
+                <video id="my-video" class="video2" muted loop autoplay playsinline>
+                    <source src="{{ url("front/img/slider/slider-vedio-strava1.mp4")}}" type="video/mp4">
+                </video>
             </div>
 
-            
-            </div>
-            
-        
+
+        </div>
     </section>
-    <!-- slider-area-end -->
-                <!-- about-area -->
-        <!-- <section class="about-area about-p pt-120 pb-120 p-relative fix">
-                <div class="container">
-                <div class="row justify-content-center align-items-center">
-                        <div class="col-lg-12 col-md-12 col-sm-12">
-                        <div class="s-about-img p-relative  wow fadeInLeft animated" data-animation="fadeInLeft" data-delay=".4s">
-                            <img src="{{ url("front/img/bg/about.png")}}" alt="img">   
-                            
-                        </div>
-                        
-                    </div>
-                                        
-                </div>
-            </div>
-        </section> -->
-        <!-- about-area-end -->
-            <!-- service-area -->
-        <section style="background: #f7fafd;" class="service-details pt-90 pb-60 p-relative">
-            <div class="container">
-                <div class="row">
-                    
-                <div class="about-title second-title pb-25">  
-                    <h5>How it Works</h5>
-                    <!-- <h2>Make your car feel like a brand new one</h2>                                    -->
-                </div>
-                    <div class="col-lg-4 col-md-12 col-sm-12">
-                        <div class="services-box07 mb-30">
-                            
-                            <div class="sr-contner">
-                            <div class="icon">
-                            <img src="{{ url("front/img/icon/sve-icon4.png")}}" alt="icon01">
-                            </div>
-                            <div class="text">
-                                <h5>Connect with Strava</h5>
-                                <p>Link your Strava account to get started.</p>
-                            </div>
-                            </div>
-                            
-                            
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-12 col-sm-12">
-                        <div class="services-box07 mb-30">
-                            <div class="sr-contner">
-                            <div class="icon">
-                            <img src="{{ url("front/img/icon/sve-icon5.png")}}" alt="icon01">
-                            </div>
-                            <div class="text">
-                                <h5>Unlock ZIP Codes</h5>
-                                <p>Explore Unlock ZIP Codes Walks, run, ride anywhere.</p>
-                            </div>
-                            </div>
-                            
-                        </div>
-                    </div>
-                    
-                    <div class="col-lg-4 col-md-12 col-sm-12">
-                            <div class="services-box07 mb-30">
-                                <div class="sr-contner">
-                                <div class="icon">
-                                <img src="{{ url("front/img/icon/sve-icon6.png")}}" alt="icon01">
-                                </div>
-                                <div class="text">
-                                    <h5>Track Progress </h5>
-                                    <p>Track progress & Join the Community See your ZIP code journey grow.</p>
-                                </div>
-                                </div>
-                                
-                            </div>
-                    </div>
-                
-                    
-                </div>
-            </div>
-        </section>
-        <!-- service-details2-area-end -->
-        
-            <!-- services-five-area -->
-        <section id="services-05" class="services-05 services-09 pt-100 pb-100 p-relative" style="background-image: url({{ url('front/img/bg/approch-bg.png') }}); background-repeat: no-repeat; background-color: #f7fafd; background-size: contain; border-bottom: 1px solid #efefef; ">
-            <div class="container">
-                <div class="row align-items-center">
-    <div class="col-lg-6 col-md-6">
-                        <div class="section-title center-align mb-50 text-left">
-                                <h5>Our Approch</h5>  
-                            <h2>
-                            AUTO SERVICING
-                            </h2>
-                            
-                        </div>
-                        
-                    </div>
-                    <div class="col-lg-6 col-md-6">
-                        <div class="section-title center-align mb-50 text-left">
-                            <p>Improve efficiency, leverage tech, and provide better customer experiences with the modern technology services available allover the world.  </p>
-                            
-                        </div>
-                        
-                    </div>
-                    
-                                <div class="col-lg-4 col-md-4">
-                                <div class="services-box-05">
-                                    
-                                    <div class="services-icon-05">
-                                        <img src="{{ url("front/img/bg/services-01.png")}}" alt="icon01">
-                                        
-                                    </div>
-                                    <div class="services-content-05">
-                                        <span>Services</span>
-                                        <h4><a href="single-service.html">Performance Upgrades</a></h4> 
-                        
-                                        </div>
-                                    </div> 
-                            </div>
-                            <div class="col-lg-4 col-md-4">
-                                <div class="services-box-05">
-                                    
-                                    <div class="services-icon-05">
-                                        <img src="{{ url("front/img/bg/services-02.png")}}" alt="icon01">
-                                    </div>
-                                    <div class="services-content-05">
-                                        <span>Services </span>
-                                        <h4><a href="single-service.html">Auto Car Repair</a></h4> 
-                        
-                                        </div>
-                                    </div> 
-                            </div>
-                    <div class="col-lg-4 col-md-4">
-                                <div class="services-box-05">
-                                    
-                                    <div class="services-icon-05">
-                                        <img src="{{ url("front/img/bg/services-03.png")}}" alt="icon01">
-                                    </div>
-                                    <div class="services-content-05">
-                                        <span>Services  </span>
-                                        <h4><a href="single-service.html">Crash Car Repair</a></h4> 
-                        
-                                        </div>
-                                    </div> 
-                            </div>
-                    
-                        
-                        
-                        
-                    </div>
-                    <div class="row align-items-center">
-                        <div class="col-md-6">
-                        <div class="services-text05">
-                            <p>Stop wasting time and money on technology.</p> 
-                            <a href="#">Explore our company</a>
-                            </div>
-                            
-                        </div>
-                        <div class="col-md-6 text-right"> <a href="#" class="btn ss-btn" data-animation="fadeInRight" data-delay=".8s">Request Demo</a>		</div>
-                    </div>
-                
-                    
-                </div>
-        </section>
-        <!-- services-three-area -->
-            <!-- service-details2-area -->
-        <section id="service-details2" class="pt-120 pb-105 p-relative" style="background: url({{ url('front/img/bg/services-bg.html') }}); background-size: contain; background-position: center center; background-repeat: no-repeat;">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-12">
-                        <div class="section-title center-align mb-50 text-center">
-                            <h5>Our Services</h5>
-                            <h2>
-                                What We Provide
-                            </h2>
-                            
-                        </div>
-                        
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12">
-                        <div class="about-content s-about-content">
-                        
-                            <ul class="sr-tw-ul ">
-                            <li>
-                                <div class="icon-right"><img src="{{ url("front/img/icon/fe-icon01.png")}}" alt="icon01"></div>
-                                <div class="text">
-                                    <h4><a href="single-service.html">Accident Insurance </a></h4> 
-                                    <p>Aenean eleifend turpis tellus, nec laoreet metus elementum ac.</p>
-                                </div>
-                                    
-                            </li>
-                            <li>
-                                    <div class="icon-right"><img src="{{ url("front/img/icon/fe-icon05.png")}}" alt="icon01"></div>
-                                <div class="text">
-                                    <h4><a href="single-service.html">Fire Insurance </a></h4> 
-                                    <p>Aenean eleifend turpis tellus, nec laoreet metus elementum ac.</p>
-                                </div>
-                                
-                            </li>
-                                <li>
-                                <div class="icon-right"><img src="{{ url("front/img/icon/fe-icon07.png")}}" alt="icon01"></div>
-                                <div class="text">
-                                    <h4><a href="single-service.html">Hail Damage </a></h4> 
-                                    <p>Aenean eleifend turpis tellus, nec laoreet metus elementum ac.</p>
-                                </div>
-                                    
-                            </li>
-                            
-                            
-                        </ul>
-                            
-                    
-                        </div>
-                    </div>
-                        <div class="col-lg-4 col-md-12 col-sm-12 text-center d-none d-lg-block">
-                        <div class="sd-img">
-                            <img src="{{ url("front/img/features/services-img-details2.png")}}" alt="img">    
-                        </div>
-                        
-                    </div>
-                    
-                <div class="col-lg-4 col-md-6 col-sm-12">
-                        <div class="about-content s-about-content">
-                        
-                                <ul class="sr-tw-ul sr-thr-ul">
-                            <li>
-                                <div class="icon"><img src="{{ url("front/img/icon/fe-icon04.png")}}" alt="icon01"></div>
-                                    <div class="text pt-10">
-                                    <h4><a href="single-service.html">Flood Insurance </a></h4> 
-                                    <p>Aenean eleifend turpis tellus, nec laoreet metus elementum ac.</p>
-                                </div>
-                            </li>
-                            <li>
-                                    <div class="icon"><img src="{{ url("front/img/icon/fe-icon06.png")}}" alt="icon01"></div>
-                                    <div class="text pt-10">
-                                    <h4><a href="single-service.html">Car Towing </a></h4> 
-                                    <p>Aenean eleifend turpis tellus, nec laoreet metus elementum ac.</p>
-                                </div>
-                            </li>
-                                <li>
-                                    <div class="icon"><img src="{{ url("front/img/icon/fe-icon08.png")}}" alt="icon01"></div>
-                                    <div class="text pt-10">
-                                    <h4><a href="single-service.html">Motorcycle Towing </a></h4> 
-                                    <p>Aenean eleifend turpis tellus, nec laoreet metus elementum ac.</p>
-                                </div>
-                            </li>
-                            
-                        </ul>
-                            
-                    
-                        </div>
-                    </div>
-                    
-                </div>
-            </div>
-        </section>
-        <!-- service-details2-area-end -->
-        
-        <!-- cta-area -->
-        <section class="cta-area cta-bg pt-120 pb-120" style="background-image:url({{ url('front/img/bg/cta_bg02.png') }})">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-lg-8">
-                        <div class="section-title cta-title wow fadeInLeft animated" data-animation="fadeInDown animated" data-delay=".2s">
-                            <h3>Get Our Service</h3>
-                            <h2>Get Premium Auto Car Service Feel Free To Contact Us.</h2>
-                            
-                        </div>
-                                            
-                    </div>
-                        <div class="col-lg-4">
-                            <div class="cta-btn s-cta-btn wow fadeInRight animated mt-30" data-animation="fadeInDown animated" data-delay=".2s">
-                                    <a href="about.html" class="btn ss-btn smoth-scroll">Get Started <i class="fal fa-angle-right"></i></a>			
-                            </div>
-                    </div>
-                
-                </div>
-            </div>
-        </section>
-        <!-- cta-area-end -->	
-            <!-- team-area -->
-        <section class="team-area2 fix p-relative pt-105 pb-80">  
-            <div class="container">  
-                <div class="row">   
-                    <div class="col-lg-12 p-relative">
-                        <div class="section-title center-align mb-50 text-center wow fadeInDown animated" data-animation="fadeInDown" data-delay=".4s">
-                            <h5>Our Team</h5>
-                            <h2>
-                                Best Expert Designer
-                            </h2>
-                            
-                        </div>
-                    </div>                        
-                        
-                </div>
-                <div class="row team-active">                   
-                    <div class="col-xl-4">
-                        <div class="single-team mb-40" >
-                            <div class="team-thumb">
-                                <div class="brd">
-                                        <img src="{{ url("front/img/team/team01.jpg")}}" alt="img">
-                                    
-                                </div>
-                            </div>
-                            <div class="team-info">
-                                <h4><a href="team-single.html">Howard Holmes</a></h4>
-                                <p>Designer</p>
-                                <div class="team-social">
-                                    <ul>
-                                        <li><a href="#"><i class="fab fa-facebook-f"></i></a></li> 
-                                        <li> <a href="#"><i class="fab fa-twitter"></i></a></li>   
-                                        <li><a href="#"><i class="fab fa-instagram"></i></a></li>   
-                                    </ul>       
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4">
-                        <div class="single-team mb-40" >
-                            <div class="team-thumb">
-                                <div class="brd">
-                                    <img src="{{ url("front/img/team/team02.jpg")}}" alt="img">
-                                </div>                                     
-                            </div>
-                            <div class="team-info">
-                                <h4><a href="team-single.html">Ella Thompson</a></h4>
-                                <p>Designer</p>
-                                <div class="team-social">
-                                    <ul>
-                                        <li><a href="#"><i class="fab fa-facebook-f"></i></a></li> 
-                                        <li> <a href="#"><i class="fab fa-twitter"></i></a></li>   
-                                        <li><a href="#"><i class="fab fa-instagram"></i></a></li>   
-                                    </ul>       
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4">
-                        <div class="single-team mb-40" >
-                            <div class="team-thumb">
-                                <div class="brd">
-                                    <img src="{{ url("front/img/team/team03.jpg")}}" alt="img">
-                                </div>
-                                
-                            </div>
-                            <div class="team-info">
-                                <h4><a href="team-single.html">Vincent Cooper</a></h4>
-                                <p>Designer</p>
-                                <div class="team-social">
-                                    <ul>
-                                        <li><a href="#"><i class="fab fa-facebook-f"></i></a></li> 
-                                        <li> <a href="#"><i class="fab fa-twitter"></i></a></li>   
-                                        <li><a href="#"><i class="fab fa-instagram"></i></a></li>   
-                                    </ul>       
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                        <div class="col-xl-4">
-                        <div class="single-team mb-40" >
-                            <div class="team-thumb">
-                                <div class="brd">
-                                        <img src="{{ url("front/img/team/team04.jpg")}}" alt="img">
-                                </div>
-                            
-                            </div>
-                            <div class="team-info">
-                                <h4><a href="team-single.html">Danielle Bryant</a></h4>
-                                <p>Designer</p>
-                                <div class="team-social">
-                                    <ul>
-                                        <li><a href="#"><i class="fab fa-facebook-f"></i></a></li> 
-                                        <li> <a href="#"><i class="fab fa-twitter"></i></a></li>   
-                                        <li><a href="#"><i class="fab fa-instagram"></i></a></li>   
-                                    </ul>       
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4">
-                        <div class="single-team mb-40" >
-                            <div class="team-thumb">
-                                <div class="brd">
-                                    <img src="{{ url("front/img/team/team05.jpg")}}" alt="img">
-                                </div>
-                                
-                            </div>
-                            <div class="team-info">
-                                <h4><a href="team-single.html">Vincent Cooper</a></h4>
-                                <p>Designer</p>
-                                <div class="team-social">
-                                    <ul>
-                                        <li><a href="#"><i class="fab fa-facebook-f"></i></a></li> 
-                                        <li> <a href="#"><i class="fab fa-twitter"></i></a></li>   
-                                        <li><a href="#"><i class="fab fa-instagram"></i></a></li>   
-                                    </ul>       
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                </div>
-            </div>
-        </section>
-        <!-- team-area-end --> 
-        <!-- faq-area -->
-        <section class="faq-area fix" style="background-color: #0c2957;">
-            <div class="container">
-
-                <div class="row align-items-center">                        
-                    
-                    <div class="col-lg-6">
-                        <div class="section-title mb-50">
-                            <h5>FAQ</h5>
-                            <h2>Frequently Asked Question</h2>
-                        </div>
-                        <div class="faq-wrap">
-                            <div class="accordion" id="accordionExample">
-                                <div class="card">
-                                    <div class="card-header" id="headingThree">
-                                        <h2 class="mb-0">
-                                            <button class="faq-btn" type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#collapseThree" aria-bs-expanded="true" aria-bs-controls="collapseThree">
-                                                Vivamus rhoncus ante a ipsum imperdiet ?
-                                            </button>
-                                        </h2>
-                                    </div>
-                                    <div id="collapseThree" class="collapse show" aria-bs-labelledby="headingThree"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="card-body">
-                                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-                                            aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-header" id="headingOne">
-                                        <h2 class="mb-0">
-                                            <button class="faq-btn collapsed" type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#collapseOne" aria-bs-expanded="false" aria-bs-controls="collapseOne">
-                                                Integer id dolor at nisi laoreet iaculis vitae ?
-                                            </button>
-                                        </h2>
-                                    </div>
-                                    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                                        <div class="card-body">
-                                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-                                            aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-header" id="headingTwo">
-                                        <h2 class="mb-0">
-                                            <button class="faq-btn collapsed" type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#collapseTwo" aria-bs-expanded="false" aria-bs-controls="collapseTwo">
-                                                Donec venenatis elit dignissim, posuere ?
-                                            </button>
-                                        </h2>
-                                    </div>
-                                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                                        <div class="card-body">
-                                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-                                            aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                                        </div>
-                                    </div>
-                                </div>
-                                    <div class="card">
-                                    <div class="card-header" id="headingOne">
-                                        <h2 class="mb-0">
-                                            <button class="faq-btn collapsed" type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#headingFour" aria-bs-expanded="false" aria-bs-controls="headingFour">
-                                                Curabitur varius, massa sit amet egestas ?
-                                            </button>
-                                        </h2>
-                                    </div>
-                                    <div id="headingFour" class="collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
-                                        <div class="card-body">
-                                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-                                            aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                                        </div>
-                                    </div>
-                                </div>
-                                                                    
-                            </div>
-                        </div>
-                    </div>
-                        <div class="col-lg-6">
-                        <div class="faq-img text-right">
-                            <img src="{{ url("front/img/bg/faq-img.jpg")}}" alt="img" class="img">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- faq-aread-end -->
-        
-            <!-- gallery-area -->
-        <section id="work" class="pt-120 pb-105">
-                <div class="container mb-50">
-                <div class="row align-items-end">
-                    <div class="col-xl-5 col-lg-5">
-                        <div class="section-title center-align ">
-                                <h5>Our Work</h5>
-                            <h2>
-                                Latest Portfolio
-                            </h2>
-                            
-                        </div>
-                    </div>
-                    <div class="col-xl-7 col-lg-7">
-                            <div class="my-masonry text-right">
-                            <div class="button-group filter-button-group ">
-                                <button class="active" data-filter="*">All</button>
-                                    <button data-filter=".financial">Car Towing </button>
-                                <button data-filter=".banking">Motorcycle Towing </button>	
-                                <button data-filter=".insurance">Hail Damage </button>
-                                <button data-filter=".family">Fire Insurance </button>
-                                <button data-filter=".business">Flood Insurance </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="container-fluid"> 
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="masonry-gallery-huge">
-                    <div class="grid col2">
-
-                        <div class="grid-item financial">   
-                            <a class="popup-image" href="{{ url("front/img/gallery/protfolio-img01.png")}}">
-                                <figure class="gallery-image">
-                                    <img src="{{ url("front/img/gallery/protfolio-img01.png")}}" alt="img" class="img">   
-                                </figure>
-                            </a>
-
-                        </div>
-                        
-                            <div class="grid-item insurance">
-                            <a class="popup-image" href="{{ url("front/img/gallery/protfolio-img03.png")}}">
-                                    <figure class="gallery-image">
-                                        <img src="{{ url("front/img/gallery/protfolio-img03.png")}}" alt="img" class="img">     
-                                    </figure>
-                                </a>
-
-                        </div>
-                            <div class="grid-item family">    
-                                <a class="popup-image" href="{{ url("front/img/gallery/protfolio-img04.png")}}">
-                                    <figure class="gallery-image">
-                                        <img src="{{ url("front/img/gallery/protfolio-img04.png")}}" alt="img" class="img">    
-                                    </figure>
-                                </a>
-                        </div>
-                        <div class="grid-item business">
-                            <a class="popup-image" href="{{ url("front/img/gallery/protfolio-img05.png")}}">
-                                    <figure class="gallery-image">
-                                        <img src="{{ url("front/img/gallery/protfolio-img05.png")}}" alt="img" class="img">
-                                    </figure>
-                                </a>
-
-                        </div>
-                            <div class="grid-item financial">
-                                <a class="popup-image" href="{{ url("front/img/gallery/protfolio-img06.png")}}">
-                                    <figure class="gallery-image">
-                                        <img src="{{ url("front/img/gallery/protfolio-img06.png")}}" alt="img" class="img">    
-                                    </figure>
-                                </a>
-                        </div>           
-                        <div class="grid-item banking">
-                                <a class="popup-image" href="{{ url("front/img/gallery/protfolio-img02.png")}}">
-                                    <figure class="gallery-image">
-                                        <img src="{{ url("front/img/gallery/protfolio-img02.png")}}" alt="img" class="img"> 
-                                    </figure>
-                                </a>
-
-
-                        </div>
-                        </div>
-                </div>
-                    
-                    </div>
-                
-                </div>
-                
-            </div>
-        </section>
-            <!-- gallery-area-end -->
-        
-        
-        
-            <!-- blog-area -->
-        <section id="blog" class="blog-area p-relative fix pt-120 pb-90" style="background: #f7fafd;">
-            <div class="container">
-                <div class="row align-items-center"> 
-                    <div class="col-lg-12">
-                        <div class="section-title center-align mb-50 text-center wow fadeInDown animated" data-animation="fadeInDown" data-delay=".4s">
-                            <h5>Our Blog</h5>
-                            <h2>
-                                Latest Blog & News
-                            </h2>
-                            
-                        </div>
-                        
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-4 col-md-6">
-                        <div class="single-post2 hover-zoomin mb-30 wow fadeInUp animated" data-animation="fadeInUp" data-delay=".4s">
-                            <div class="blog-thumb2">
-                                <a href="blog-details.html"><img src="{{ url("front/img/blog/inner_b1.jpg")}}" alt="img"></a>
-                            </div>                    
-                            <div class="blog-content2">    
-                                <div class="b-meta">
-                                    <div class="meta-info">
-                                        <ul>
-                                            <li><i class="fal fa-user"></i> Admin</li>
-                                            <li><i class="fal fa-calendar-alt"></i> 24th March 2021</li>
-
-                                        </ul>
-                                    </div>
-                                </div>
-                                <h4><a href="blog-details.html">Cras accumsan nulla nec lacus ultricies placerat.</a></h4> 
-                                <p>Curabitur sagittis libero tincidunt tempor finibus. Mauris at dignissim ligula, nec tristique orci.</p>
-                            </div>
-                        </div>
-                    </div>
-                        <div class="col-lg-4 col-md-6">
-                        <div class="single-post2 mb-30 hover-zoomin wow fadeInUp animated" data-animation="fadeInUp" data-delay=".4s">
-                            <div class="blog-thumb2">
-                                <a href="blog-details.html"><img src="{{ url("front/img/blog/inner_b2.jpg")}}" alt="img"></a>
-                            </div>
-                            <div class="blog-content2">                                    
-                                <div class="b-meta">
-                                    <div class="meta-info">
-                                        <ul>
-                                            <li><i class="fal fa-user"></i> Admin</li>
-                                            <li><i class="fal fa-calendar-alt"></i> 24th March 2021</li>
-
-                                        </ul>
-                                    </div>
-                                </div>
-                                <h4><a href="blog-details.html">Dras accumsan nulla nec lacus ultricies placerat.</a></h4> 
-                                <p>Curabitur sagittis libero tincidunt tempor finibus. Mauris at dignissim ligula, nec tristique orci.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6">
-                        <div class="single-post2 mb-30 hover-zoomin wow fadeInUp animated" data-animation="fadeInUp" data-delay=".4s">
-                            <div class="blog-thumb2">
-                                <a href="blog-details.html"><img src="{{ url("front/img/blog/inner_b3.jpg")}}" alt="img"></a>
-                            </div>
-                            <div class="blog-content2">                                    
-                                <div class="b-meta">
-                                    <div class="meta-info">
-                                        <ul>
-                                            <li><i class="fal fa-user"></i> Admin</li>
-                                            <li><i class="fal fa-calendar-alt"></i> 24th March 2021</li>
-
-                                        </ul>
-                                    </div>
-                                </div>
-                                <h4><a href="blog-details.html">Seas accumsan nulla nec lacus ultricies placerat.</a></h4> 
-                                <p>Curabitur sagittis libero tincidunt tempor finibus. Mauris at dignissim ligula, nec tristique orci.</p>
-                            </div>
-                        </div>
-                    </div>
-            
-                    
-                </div>
-            </div>
-        </section>
-        <!-- blog-area-end -->
+    <section id="brand">
         <!-- brand-area -->
-        <div class="brand-area pt-60 pb-60" style="background-color:#e81c2e">
+        <div class="brand-area pt-60 pb-60" style="background-color:#f7fafd">
             <div class="container">
                 <div class="row brand-active">
                     <div class="col-xl-2">
                         <div class="single-brand">
-                            <img src="{{ url("front/img/brand/b-logo1.png")}}" alt="img">
+                            <img src="{{ url('front/img/brand/civatech.png') }}" alt="CIVA Technologies">
                         </div>
                     </div>
                     <div class="col-xl-2">
                         <div class="single-brand">
-                                <img src="{{ url("front/img/brand/b-logo2.png")}}" alt="img">
+                            <img src="{{ url('front/img/brand/epicstitch.png') }}" alt="EpicStitch">
                         </div>
                     </div>
                     <div class="col-xl-2">
                         <div class="single-brand">
-                                <img src="{{ url("front/img/brand/b-logo3.png")}}" alt="img">
+                            <img src="{{ url('front/img/brand/epicneedle.png') }}" alt="EpicNeedle">
                         </div>
                     </div>
                     <div class="col-xl-2">
                         <div class="single-brand">
-                                <img src="{{ url("front/img/brand/b-logo4.png")}}" alt="img">
+                            <img src="{{ url('front/img/brand/magicforce.png') }}" alt="MagicForce">
                         </div>
                     </div>
                     <div class="col-xl-2">
                         <div class="single-brand">
-                                <img src="{{ url("front/img/brand/b-logo5.png")}}" alt="img">
+                            <img src="{{ url('front/img/brand/cratecontrol.png') }}" alt="CrateControl">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <!-- brand-area-end -->
+    </section>
+    <section class="about-area about-p pt-70 pb-70 p-relative fix">
+        <!--<div class="animations-01"><img src="{{ url("front/img/bg/an-img-01.png")}}" alt="an-img-01"></div>
+        <div class="animations-02"><img src="{{ url("front/img/bg/an-img-02.png")}}" alt="contact-bg-an-01"></div>-->
+        <div class="container">
+            <div class="row justify-content-center align-items-center">
+                <div class="col-lg-6 col-md-12 col-sm-12">
+                    <div class="s-about-img p-relative  wow fadeInLeft animated" data-animation="fadeInLeft"
+                        data-delay=".4s">
+                        <img src="{{ url("front/img/events/12.jpg")}}" alt="img">
+                        <div class="about-text second-about">
+                            <span>1M+</span>
+                            <p>ZIP code stories</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-lg-6 col-md-12 col-sm-12">
+                    <div class="about-content s-about-content  wow fadeInRight  animated" data-animation="fadeInRight"
+                        data-delay=".4s">
+                        <div class="about-title second-title pb-25">
+                            <h5>About the movement</h5>
+                            <h2>A simple idea—turn movement into meaning</h2>
+                        </div>
+                        <p>Zipcode Challenge started with a simple belief: every walk, run, or ride tells a story. Not
+                            just in distance or speed—but in the places you pass through. By capturing each ZIP code
+                            along the way, we turn everyday activity into a living map of exploration.</p>
+                        <p>There are no routes to follow and no targets to chase. Just connect your activity, explore
+                            the ZIP codes you move through, and watch your journey grow over time.</p>
+                        <div class="about-content3">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <ul class="green">
+                                        <li> Connect your activity (Strava integration)</li>
+                                        <li> Explore new ZIP codes across cities and states</li>
+                                        <li> Track your personal journey and progress over time</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        @if(!auth('athlete')->check())
+                        <div class="slider-btn mt-20">
+                            @if(!auth('athlete')->check())
+                            <a href="{{route('athlete.strava.login')}}"><img src="{{ url("front/img/strava-connect/btn_strava_connect_with_orange.png")}}" alt=""></a>
+                            @else
+                            <a href="{{auth('athlete')->check()?route('account.dashboard'):route('athlete.strava.login')}}" class="btn ss-btn smoth-scroll">See your data <i
+                                    class="fal fa-angle-right"></i></a>
+                            @endif
+                        </div>
+                        @endif
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <section style="background: #f7fafd;" class="service-details pt-70  pb-70  p-relative what-happens">
+        <div class="container">
+            <div class="row">
+
+                <div class="about-title second-title pb-25">
+                    <h5>What happens when you start</h5>
+                    <h3>Once you connect your activity, your journey starts to take shape.</h3>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                    <div class="services-box07 mb-30">
+
+                        <div class="sr-container">
+                            <div class="icon">
+                                <img src="{{ url("front/img/icon/Connect-circle.png")}}" alt="icon01">
+                            </div>
+                            <div class="text">
+                                <h5>Your activities</h5>
+                                <p>Every walk, run, and ride is captured and organized in one place—so you can see your
+                                    consistency grow over time.</p>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                    <div class="services-box07 mb-30">
+                        <div class="sr-container">
+                            <div class="icon">
+                                <img src="{{ url("front/img/icon/explore-circle.png")}}" alt="icon01">
+                            </div>
+                            <div class="text">
+                                <h5>ZIP codes explored</h5>
+                                <p>Track the ZIP codes your movement has touched. Each activity adds a new layer to your
+                                    personal map.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                    <div class="services-box07 mb-30">
+                        <div class="sr-container">
+                            <div class="icon">
+                                <img src="{{ url("front/img/icon/belong-circle.png")}}" alt="icon01">
+                            </div>
+                            <div class="text">
+                                <h5>Weekly progress </h5>
+                                <p>Stay motivated with simple insights—see how many ZIP codes you're exploring each week
+                                    and keep building momentum.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row align-items-center">
+
+                <div class="col-md-12 text-center">
+                    <div class="slider-btn mt-20">
+                        <a href="{{auth('athlete')->check()?route('account.dashboard'):route('athlete.strava.login')}}" class="btn ss-btn smoth-scroll">See your data <i
+                                class="fal fa-angle-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="faq-area fix walk-ride" style="background-color: #0c2957;">
+        <div class="container">
+
+            <div class="row align-items-center">
+
+                <div class="col-lg-6">
+                    <div class="section-title mb-50">
+                        <h5>Join Us</h5>
+                        <h2 class="pb-3"><span class="walk">Walk.</span>
+                            <span class="run">Run.</span>
+                            <span class="ride">Ride.</span>
+                        </h2>
+                        <h5 class="text-white pb-3">Unlock new ZIP codes. Explore one neighborhood at a time.</h5>
+                        @if(!auth('athlete')->check())
+                        <a href="{{route('athlete.strava.login')}}"><img src="{{ url("front/img/strava-connect/btn_strava_connect_with_orange.png")}}" alt=""></a>
+                        @else
+                        <a href="{{auth('athlete')->check()?route('account.dashboard'):route('athlete.strava.login')}}" class="btn ss-btn smoth-scroll">See your data <i
+                                class="fal fa-angle-right"></i></a>
+                        @endif
+                    </div>
+                    <!--<div class="faq-wrap">
+                        <div class="stats">
+                            <strong>139</strong> ZIP Codes Unlocked
+                            <span>| 27% Completed</span>
+                        </div>
+                    </div>-->
+                </div>
+                <div class="col-lg-6">
+                    <div class="faq-img text-right">
+                        <img src="{{ url("front/img/bg/about.png")}}" alt="img" class="img">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    @if(auth('athlete')->check())
+    <section class="about-area about-p pt-70 pb-70 p-relative fix">
+        <div class="container">
+            <div class="row justify-content-center align-items-center">
+
+                <div class="col-lg-6 col-md-12 col-sm-12">
+                    <div class="about-content s-about-content  wow fadeInRight   animated" data-animation="fadeInRight"
+                        data-delay=".4s" style="visibility: visible; animation-name: fadeInRight;">
+                        <div class="about-title second-title pb-25">
+                            <h5>Moving together</h5>
+                            <h3>Exploring places together — one ZIP code at a time.</h3>
+                        </div>
+                        <div class="slider-btn mt-10">
+                            <a class="btn ss-btn smoth-scroll" href="https://www.strava.com/clubs/1882085"
+                                target="_blank">Join the Zipcode Strava Club <i class="ph ph-trend-up ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12 col-sm-12">
+                    <iframe allowtransparency='true' frameborder='0' height='170' scrolling='no'
+                        src='https://www.strava.com/clubs/1882085/latest-rides/a4ca314fb0f0f3f3e3a58d19a498178b5f6de052?show_rides=false'
+                        width='100%'></iframe>
+                    <!-- <div class="s-about-img p-relative  wow fadeInLeft  animated" data-animation="fadeInLeft" data-delay=".4s" style="visibility: visible; animation-name: fadeInLeft;">
+                                <img src="img/features/about_img_02.png" alt="img">   
+                               <div class="about-text second-about">
+                                    <span>25</span>
+                                    <p>Years of Experience</p>
+                                </div>
+                            </div> -->
+
+                </div>
+
+
+            </div>
+        </div>
+    </section>
+    @endif
+    <section class="cta-area cta-bg pt-90 pb-70" style="background-image:url({{ url("front/img/bg/our-achievement.png")}})">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="section-title cta-title wow fadeInLeft animated" data-animation="fadeInDown animated"
+                        data-delay=".2s">
+                        <h3>Our Achievement</h3>
+                        <h2>Every ride tells a story. Here's you are so far.</h2>
+                        <p class="text-white">Real numbers from your movement-not goals, not projections. What you are actually done </p>
+                    </div>
+
+                </div>
+                <div class="col-lg-6 col-md-12 cy_counter_wrapper">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 section-title cta-title">
+
+                        </div>
+                        <div class="col-lg-4 col-md-4">
+                            <div class="cy_count_box">
+                                <img src="{{url("front/img/icon/cycling.png")}}" alt="counter">
+                                <h1 class="cy_counter_num" data-to="5000" data-speed="1500">{{$achievement->total_distance??0}}</h1>
+                                <p>Miles Driven</p>
+                                <p class="cta-area-desc">In Zip {{$achievement->zip_code??null}} alone</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4">
+                            <div class="cy_count_box">
+                                <img src="{{url("front/img/icon/map.png")}}" alt="counter">
+                                <!-- <img src="{{url("front/img/icon/club-members.svg")}}" alt="counter"> -->
+                                <h1 class="cy_counter_num" data-to="150" data-speed="1500">{{$totalZipCodes??null}}</h1>
+                                <p>Zipcode Explored</p>
+                                <p class="cta-area-desc">Across {{$topState?$topState:' TX & beyond'}}</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4">
+                            <div class="cy_count_box">
+                                <img src="{{url("front/img/icon/star.png")}}" alt="counter">
+                                <h1 class="cy_counter_num" data-to="16" data-speed="1500">{{$totalActivity??null}}</h1>
+                                <p>Activity Logged</p>
+                                <p class="cta-area-desc">and counting</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="col-lg-6">
+                              <div class="cta-btn s-cta-btn wow fadeInRight animated mt-30" data-animation="fadeInDown animated" data-delay=".2s">
+									  <a href="about.html" class="btn ss-btn smoth-scroll">Get Started <i class="fal fa-angle-right"></i></a>			
+								</div>
+                        </div> -->
+
+            </div>
+        </div>
+    </section>
+    <section id="service-details2" class="pt-70 pb-70 p-relative"
+        style="background: url(img/bg/services-bg.html); background-size: contain; background-position: center center; background-repeat: no-repeat; ">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-12">
+                    <div class="section-title center-align mb-50 text-center">
+                        <h5>Your ZIP code story</h5>
+                        <h3>
+                            What you've accomplished so far—captured through your movement.
+                        </h3>
+                        <p>Every activity leaves a mark. Here's your journey so far.</p>
+
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                    <div class="about-content s-about-content">
+
+                        <ul class="sr-tw-ul ">
+                            <li>
+                                <div class="icon-right">
+                                    <h1 class="cy_counter_num" data-to="150" data-speed="1500">{{$result->total_zipcodes}}</h1>
+                                </div>
+                                <div class="text">
+                                    <h4><a href="javascript:;">ZIP codes explored </a></h4>
+                                    <p>All the ZIP codes your movement has taken you through</p>
+                                </div>
+
+                            </li>
+                            <li>
+                                <div class="icon-right">
+                                    <h1 class="cy_counter_num" data-to="150" data-speed="1500">{{$result->activity_count}}</h1>
+                                </div>
+                                <div class="text">
+                                    <h4><a href="javascript:;">Activity count</a></h4>
+                                    <p>Track how often you've moved through each ZIP code.</p>
+                                </div>
+
+                            </li>
+                            <li>
+                                <div class="icon-right">
+                                    <h1 class="cy_counter_num" data-to="150" data-speed="1500">{{$result->weekly_activity_count}}</h1>
+                                </div>
+                                <div class="text">
+                                    <h4><a href="javascript:;">Weekly activity</a></h4>
+                                    <p>ZIP codes explored this week—keep building your momentum.</p>
+                                </div>
+
+                            </li>
+
+
+                        </ul>
+
+
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12 text-center d-none d-lg-block">
+                    <div class="sd-img">
+                        <img src="{{ url("front/img/bg/about.png") }}" alt="img">
+                    </div>
+
+                </div>
+
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                    <div class="about-content s-about-content">
+
+                        <ul class="sr-tw-ul sr-thr-ul">
+                            <li>
+                                <div class="icon">
+                                    <h1 class="cy_counter_num" data-to="150" data-speed="1500">{{$result->highest_elevation}}</h1><span class="measurement">ft</span>
+                                </div>
+                                <div class="text pt-10">
+                                    <h4><a href="javascript:;">Highest elevation</a></h4>
+                                    <p>The climbs and challenges you've conquered along the way.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <h1 class="cy_counter_num" data-to="150" data-speed="1500">{{$result->top_speed}}</h1> <span class="measurement">mph</span>
+                                </div>
+                                <div class="text pt-10">
+                                    <h4><a href="javascript:;">Top speed</a></h4>
+                                    <p>Your fastest moments—and how your performance evolves over time.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <h1 class="cy_counter_num" data-to="150" data-speed="1500">{{$result->favourite_zipcode}}</h1>
+                                </div>
+                                <div class="text pt-10">
+                                    <h4><a href="javascript:;">Your favorite ZIP code</a></h4>
+                                    <p>The ZIP code you visit most—the place that defines your journey.</p>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    @if(!empty($zipCodes))
+    <section class="service-details pt-90  pb-80  p-relative" style="background: #f7fafd;">
+        <div class="container">
+            <div class="row">
+
+                <div class="about-title second-title pb-25">
+                    <h5>ZIP codes</h5>
+                    <h3>Your ZIP code breakdown.</h3>
+                    <p>Dive deeper into the places your movement has taken you.</p>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="table-card table table-responsive mb-3">
+                        <table class="zip-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:15%;">
+                                        ZIP code
+                                    </th>
+                                    <th style="width:18%;">
+                                        Activity count
+                                    </th>
+                                    <th style="width:22%;">
+                                        <h6>Total distance (mi)</h6>
+                                    </th>
+                                    <th style="width:22%;">
+                                        <h6>Highest elevation (ft)</h6>
+                                    </th>
+                                    <th style="width:18%;">
+                                        <h6>Top speed (mph)</h6>
+                                    </th>
+                                    <th style="width:7%;">
+                                        <h6>Action</h6>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if($zipCodes->count())
+                                @foreach($zipCodes as $zipcode)
+                                <tr>
+                                    <td>{{$zipcode->zip_code}}</td>
+                                    <td>{{$zipcode->total_attempts}}</td>
+                                    <td>{{$zipcode->total_distance}}</td>
+                                    <td>{{$zipcode->highest_elevation}}</td>
+                                    <td>{{$zipcode->highest_speed}}</td>
+                                    <td><a class="view-btn" href="{{auth('athlete')->check()?route('account.segments.leaderboard', $zipcode->zip_code):route('athlete.strava.login')}}">View</a></td>
+                                </tr>
+                                @endforeach
+                                @else
+                                <tr>
+                                    <td colspan="6" class="text-center">No data found</td>
+                                </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row align-items-center">
+
+                <div class="col-md-12 text-center">
+                    <div class="slider-btn mt-20">
+                        <a href="{{auth('athlete')->check()?route('account.passed-zips'):route('athlete.strava.login')}}" class="btn ss-btn smoth-scroll">View your ZIP code map <i
+                                class="fal fa-angle-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    @endif
+    <section class="service-details pt-70  pb-50  p-relative how-it-works">
+        <div class="container">
+            <div class="row">
+                <div class="about-title second-title pb-25">
+                    <h5>How it Works</h5>
+
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                    <div class="services-box07 mb-30">
+
+                        <div class="sr-container">
+                            <div class="icon">
+                                <img src="{{ url("front/img/icon/Connect-circle.png")}}" alt="icon01">
+                            </div>
+                            <div class="text">
+                                <h5>Connect with Strava</h5>
+                                <p>Link your Strava account to get started.</p>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                    <div class="services-box07 mb-30">
+                        <div class="sr-container">
+                            <div class="icon">
+                                <img src="{{ url("front/img/icon/explore-circle.png")}}" alt="icon01">
+                            </div>
+                            <div class="text">
+                                <h5>Unlock ZIP Codes</h5>
+                                <p>Explore Unlock ZIP Codes Walks, run, ride anywhere.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-12 col-sm-12">
+                    <div class="services-box07 mb-30">
+                        <div class="sr-container">
+                            <div class="icon">
+                                <img src="{{ url("front/img/icon/belong-circle.png")}}" alt="icon01">
+                            </div>
+                            <div class="text">
+                                <h5>Track Progress </h5>
+                                <p>Track progress & Join the Community See your ZIP code journey grow.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <!-- <section id="work" class="pt-120 pb-105">
+                  <div class="container mb-50">
+                    <div class="row align-items-end">
+                       <div class="col-xl-5 col-lg-5">
+                           <div class="section-title center-align ">
+                                 <h5>Our Events</h5>
+                                <h2>
+                                   Latest Events
+                                </h2>
+                             
+                            </div>
+                        </div>
+                       
+                    </div>
+                </div>
+                <div class="container-fluid"> 
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="masonry-gallery-huge">
+                        <div class="grid col2">
+
+                            <div class="grid-item financial">   
+                                <a class="popup-image" href="{{ url("front/img/events/6.jpg")}}">
+                                    <figure class="gallery-image">
+                                      <img src="{{ url("front/img/events/6.jpg")}}" alt="img" class="img">   
+                                    </figure>
+                                </a>
+
+                            </div>
+                            
+                             <div class="grid-item insurance">
+                               <a class="popup-image" href="{{ url("front/img/events/7.jpg")}}">
+                                        <figure class="gallery-image">
+                                          <img src="{{ url("front/img/events/7.jpg")}}" alt="img" class="img">     
+                                        </figure>
+                                    </a>
+
+                            </div>
+                                <div class="grid-item family">    
+                                    <a class="popup-image" href="{{ url("front/img/events/39.jpg")}}">
+                                        <figure class="gallery-image">
+                                          <img src="{{ url("front/img/events/3.jpg")}}" alt="img" class="img">    
+                                        </figure>
+                                    </a>
+                            </div>
+                            <div class="grid-item business">
+                             <a class="popup-image" href="{{ url("front/img/events/4.jpg")}}">
+                                        <figure class="gallery-image">
+                                          <img src="{{ url("front/img/events/4.jpg")}}" alt="img" class="img">
+                                        </figure>
+                                    </a>
+
+                            </div>
+                             <div class="grid-item financial">
+                                   <a class="popup-image" href="{{ url("front/img/events/5.jpg")}}">
+                                        <figure class="gallery-image">
+                                          <img src="{{ url("front/img/events/5.jpg")}}" alt="img" class="img">    
+                                        </figure>
+                                    </a>
+                            </div>           
+                     
+                            </div>
+                    </div>
+                        
+                        </div>
+                    
+                    </div>
+					
+                </div>
+        </section>  -->
+    <!-- <section class="cta-area cta-bg pt-120 pb-90" style="background-image:url({{ url("front/img/bg/cta_bg02.png")}})">
+            <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="section-title cta-title wow fadeInLeft animated" data-animation="fadeInDown animated" data-delay=".2s">
+                        <h3>Leader Board<</h3>
+                        <h2>Leader Board</h2>
+                        
+                    </div>
+                                             
+                </div>
+                <div class="col-lg-6">
+                   <div class="cy_result_slider">
+                        <h4 class="cy_heading">Northumberland Race 2018</h4>
+                        <div class="owl-carousel">
+          
+                            <div class="item">
+                                <div class="cy_result_box">
+                                    <div class="cy_result_icon">
+                                        <img src="{{ url("front/img/icon/result.svg")}}" alt="result">
+                                    </div>
+                                    <div class="cy_result_data">
+                                            <h1>1</h1>
+                                           <h4><span>st</span>Lauren Harris - 1 hr 24 min 48 sec</h4>
+                                    </div>
+                                    
+                                </div>
+                                 <div class="cy_result_box">
+                                    <div class="cy_result_icon">
+                                        <img src="{{ url("front/img/icon/result.svg")}}" alt="result">
+                                    </div>
+                                    <div class="cy_result_data">
+                                            <h1>2</h1>
+                                            <h4><span>nd</span>Lauren Harris - 1 hr 24 min 48 sec</h4>
+                                    </div>
+                                    
+                                </div>
+                                    <div class="cy_result_box">
+                                    <div class="cy_result_icon">
+                                        <img src="{{ url("front/img/icon/result.svg")}}" alt="result">
+                                    </div>
+                                    <div class="cy_result_data">
+                                            <h1>3</h1>
+                                            <h4><span>rd</span>Lauren Harris - 1 hr 24 min 48 sec</h4>
+                                    </div>
+                                    
+                                </div>
+                                  
+                              
+                            </div>
+
+
+                            <div class="item">
+                                <div class="cy_result_box">
+                                    <div class="cy_result_icon">
+                                        <img src="{{ url("front/img/icon/result.svg")}}" alt="result">
+                                    </div>
+                                    <div class="cy_result_data">
+                                            <h1>4</h1>
+                                           <h4><span>th</span>Lauren Harris - 1 hr 24 min 48 sec</h4>
+                                    </div>
+                                    
+                                </div>
+                                 <div class="cy_result_box">
+                                    <div class="cy_result_icon">
+                                        <img src="{{ url("front/img/icon/result.svg")}}" alt="result">
+                                    </div>
+                                    <div class="cy_result_data">
+                                            <h1>5</h1>
+                                            <h4><span>th</span>Lauren Harris - 1 hr 02 min 48 sec</h4>
+                                    </div>
+                                    
+                                </div>
+                                    <div class="cy_result_box">
+                                    <div class="cy_result_icon">
+                                        <img src="{{ url("front/img/icon/result.svg")}}" alt="result">
+                                    </div>
+                                    <div class="cy_result_data">
+                                            <h1>6</h1>
+                                            <h4><span>th</span>Lauren Harris - 1 hr 02 min 48 sec</h4>
+                                    </div>
+                                    
+                                </div>
+                                  
+                              
+                            </div>
+
+                        </div>
+                    </div>
+               </div>
+            </div>
+            </div>
+        </section> -->
 </main>
-    
+
 @endsection
 
 @section('script')
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script> -->
+<script>
+    // $(document).ready(function(){
+    //     $('.owl-carousel').owlCarousel({
+    //         loop: true,
+    //         margin: 30,
+    //         nav: true,
+    //         dots: false,
+    //         autoplay: true,
+    //         autoplayTimeout: 3000,
+    //         smartSpeed: 1000,
+    //         responsive:{
+    //             0:{ items:1 },
+    //             768:{ items:1 },
+    //             1000:{ items:1 }
+    //         }
+    //     });
+    // });
+</script>
 @endsection

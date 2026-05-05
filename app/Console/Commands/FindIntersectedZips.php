@@ -15,7 +15,7 @@ class FindIntersectedZips extends Command
 
     public function handle()
     {
-        $activities = AthleteActivity::where('id','>=',26)->get();
+        $activities = AthleteActivity::get();
        // $ids = $query->pluck('id');
         $athlete=Athlete::whereId(2)->first();
         $accessToken = $athlete->account->access_token;

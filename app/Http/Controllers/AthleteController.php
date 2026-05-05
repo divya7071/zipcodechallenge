@@ -2,18 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ActivityFetchCompleted;
+use App\Events\ZipSyncProgressEvent;
 use App\Jobs\SyncAthleteStravaActivity;
 use App\Models\Athlete;
+use App\Models\AthleteAccount;
 use App\Models\AthleteActivity;
+use App\Models\AthleteActivityMap;
 use App\Models\AthleteActivityZipStat;
+use App\Models\RemoveAccount;
+use App\Models\ZipCode;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Traits\ZipIntersectionTrait;
-
+use App\Traits\StravaHelper;
 class AthleteController extends Controller
 {
-    use ZipIntersectionTrait;
+    use ZipIntersectionTrait,StravaHelper;
      public function index()
     {
         if (!auth('athlete')->check()) {
@@ -27,9 +33,11 @@ class AthleteController extends Controller
        return redirect()->route('strava.index');
     }
     public function overview(){
+            //    event(new ActivityFetchCompleted('completed', auth('athlete')->id())); 
         // $activities=AthleteActivity::where('athlete_id',auth('athlete')->user()->id)->get();
         $activities=AthleteActivity::with(['media','passedZips'])->where('athlete_id', auth('athlete')->user()->id)->orderBy('date', 'desc')->take(10)->get();
-        $startDate = Carbon::now()->subWeeks(4);
+       // $startDate = Carbon::now()->subWeeks(1);
+        $startDate = Carbon::now()->startOfWeek();
         $summary = AthleteActivity::where('athlete_id', auth('athlete')->user()->id)
             ->where('date', '>=', $startDate)
             ->selectRaw('
@@ -46,7 +54,7 @@ class AthleteController extends Controller
             $totalMovingTime =$this->formatDuration($summary->total_moving_time);
 
             $totalElevationFt = $summary->total_elevation ?? 0;
-            $result = AthleteActivityZipStat::where('athlete_id',auth('athlete')->user()->id)
+            $result = AthleteActivityZipStat::whereHas('activity')->where('athlete_id',auth('athlete')->user()->id)
                 ->selectRaw("
                     COUNT(DISTINCT zip_code) as total_zips,
                     COUNT(DISTINCT CASE WHEN date >= ? THEN zip_code END) as total_zips_from_start
@@ -56,7 +64,15 @@ class AthleteController extends Controller
             $totalZips = $result->total_zips;
             $totalZipsWeeks = $result->total_zips_from_start;
             $weeks = 4;
-
+           $favouriteZip = AthleteActivityZipStat::whereHas('activity')->select(
+                'zip_code',
+                DB::raw('SUM(distance_mi) as total_distance'),
+                DB::raw('COUNT(*) as total_visits')
+            )
+            ->where('athlete_id', auth('athlete')->user()->id)
+            ->groupBy('zip_code')
+            ->orderByDesc('total_distance')
+            ->first();
         $avgActivitiesPerWeek = round($totalActivities / $weeks, 1);
 
         $avgDistancePerWeek = round($totalDistanceMiles / $weeks, 1);
@@ -84,9 +100,71 @@ class AthleteController extends Controller
                     'totalZips'=>$totalZipsWeeks,
                     'longestRideMiles'=>$longestRideMiles,
                     'longestRide'=>$longestRide,
-
+                    'favouriteZip'=>$favouriteZip,
+                  
                 ];
-        return view('overview')->with(['activities'=>$activities,'totalZips'=>$totalZips,'summary'=>$summary,'longestRide'=>$longestRide]);
+        
+        $zipcodeRanks = AthleteActivityZipStat::whereHas('activity')->select(
+                'zip_code',
+                DB::raw('COUNT(*) as total_attempts'),
+                DB::raw('SUM(distance_mi) as total_distance'),
+                DB::raw('MAX(elevation_gain_ft) as highest_elevation'),
+                DB::raw('MAX(max_speed_mph) as highest_speed'),
+                DB::raw('MAX(date) as last_activity_date')
+            )
+            ->where('athlete_id', auth('athlete')->user()->id)
+            ->groupBy('zip_code')
+            ->orderByDesc('total_attempts') 
+            ->paginate(5);
+    $start = Carbon::now()->startOfWeek(); // Mon
+    $end = Carbon::now()->endOfWeek();     // Sun
+    // $start = Carbon::now()->subMonth()->startOfMonth()->startOfWeek();
+    // $end   = $start->copy()->endOfWeek();
+    $query = AthleteActivityZipStat::whereHas('activity')->select(
+        DB::raw('DATE(date) as day'),
+        DB::raw('COUNT(DISTINCT zip_code) as total_zips')
+    )
+    ->whereBetween('date', [$start, $end]);
+
+    // apply only if logged in
+    if (auth('athlete')->check()) {
+        $query->where('athlete_id', auth('athlete')->id());
+    }
+
+    $data = $query
+        ->groupBy('day')
+        ->pluck('total_zips', 'day');
+
+    // prepare full week (Mon–Sun)
+    $week = [];
+    $labels = [];
+    $counts = [];
+
+    for ($i = 0; $i < 7; $i++) {
+        $date = $start->copy()->addDays($i);
+        $dayName = $date->format('D');
+
+        $labels[] = $dayName;
+        $counts[] = $data[$date->toDateString()] ?? 0;
+    }
+
+    // best day
+    $max = max($counts);
+    $bestIndex = array_search($max, $counts);
+    $bestDay = $labels[$bestIndex];
+    $weeklyData=['labels'=>$labels,
+        'counts'=>$counts,
+        'start'=>$start,
+        'end'=>$end,
+        'bestDay'=>$bestDay,
+        'max'=>$max];
+     $passedZips = AthleteActivityZipStat::wherehas('activity')->where('athlete_id', auth('athlete')->id())
+    ->selectRaw('zip_code, COUNT(*) as total')
+    ->groupBy('zip_code')
+    ->pluck('total', 'zip_code')
+    ->toArray();
+               //  return view('overview')->with(['activities'=>$activities,'totalZips'=>$totalZips,'summary'=>$summary,'longestRide'=>$longestRide]);
+        return view('account.index')->with(['activities'=>$activities,'totalZips'=>$totalZips,'summary'=>$summary,'zipcodeRanks'=>$zipcodeRanks,'sportTypes' => AthleteActivity::distinct()->pluck('sport_type'),'weeklyData'=>$weeklyData,'isSyncing' => auth('athlete')->user()->is_syncing,'passedZips'=>$passedZips]);
     
     }
     public function detail($athlete_id){
@@ -137,7 +215,7 @@ class AthleteController extends Controller
             
             return number_format($day->sum('distance')/ 1609.344, 2); 
         });
-        $zipStats = AthleteActivityZipStat::select(
+        $zipStats = AthleteActivityZipStat::whereHas('activity')->select(
             'zip_code',
             'athlete_id',
             DB::raw('COUNT(*) as total_attempts'),
@@ -177,7 +255,7 @@ class AthleteController extends Controller
             $totalMovingTime =$this->formatDuration($summary->total_moving_time);
 
             $totalElevationFt = $summary->total_elevation ?? 0;
-            $totalZips = AthleteActivityZipStat::where('athlete_id', $athlete->id)
+            $totalZips = AthleteActivityZipStat::whereHas('activity')->where('athlete_id', $athlete->id)
             ->where('date', '>=', $startDate)
             ->distinct('zip_code')
             ->count('zip_code');
@@ -215,6 +293,78 @@ class AthleteController extends Controller
         'localLegends'=>$localLegends,'summary'=>$summary]); 
         
     }
+ public function removeAccount(){
+          $activities=AthleteActivity::with(['media','passedZips'])->where('athlete_id', auth('athlete')->user()->id)->orderBy('date', 'desc')->take(10)->get();
+       // $startDate = Carbon::now()->subWeeks(1);
+       
+        $summary = AthleteActivity::where('athlete_id', auth('athlete')->user()->id)
+                ->selectRaw('
+                COUNT(*) as total_activities,
+                SUM(distance) as total_distance,
+                SUM(moving_time) as total_moving_time,
+                SUM(elevation) as total_elevation
+            ')
+            ->first();
+            $totalActivities = $summary->total_activities ?? 0;
+            $totalDistanceMiles = ($summary->total_distance ?? 0) / 1609.34;
+            $result = AthleteActivityZipStat::wherehas('activity')->where('athlete_id',auth('athlete')->user()->id)
+                ->selectRaw("
+                    COUNT(DISTINCT zip_code) as total_zips")
+                ->first();
+
+        $totalPassedZips = $result->total_zips;
+        $totalZipcode=ZipCode::distinct('zip_code')->count();
+        $completdPercentage=0;
+        if($totalPassedZips>0 && $totalZipcode>0)
+        $completdPercentage=($totalPassedZips/$totalZipcode)*100;
+   
+        $summary=[
+            'totalActivities'=>$totalActivities,
+            'totalDistanceMiles'=>$totalDistanceMiles,
+            'totalPassedZips'=>$totalPassedZips,
+            'completdPercentage'=>$completdPercentage
+        ];
+
+  
+        return view('account.remove-account')->with(['summary'=>$summary]); 
+    }
+  public function deleteAccount(Request $request){
+        
+        $request->validate([
+            'reason' => 'required',
+            'other_reason' => 'required_if:reason,other',
+            'comments' => 'required',
+            'feedback' => 'nullable',
+            'delete_confirm' => ['required', 'in:DELETE'],
+        ]);
+        $athlete=Athlete::whereId(auth('athlete')->id())->first();
+        RemoveAccount::create([
+            'athlete_id'   => auth('athlete')->id(),
+            'athlete_strava_id' => $athlete->athlete_id,
+            'first_name'        => $athlete->first_name,
+            'last_name'         => $athlete->last_name,
+            'email'             => $athlete->email,
+            'reason'            => $request->reason,
+            'other_reason'      => $request->other_reason,
+            'comments'          => $request->comments,
+            'feedback'          => $request->feedback,
+        ]);
+        $athlete=Athlete::where('id', auth('athlete')->user()->id)->first();
+        $this->disconnectStrava($athlete);
+        $this->archiveAthleteData($athlete->id);
+        return response()->json(['result'=>'success']);
+
+    }
+    public function pauseAccount(Request $request){
+           $request->validate([
+            'pause_confirm' => 'required',
+            ]);
+
+              $athlete=Athlete::where('id', auth('athlete')->user()->id)->first();
+              $athlete->update(['status'=> 2]);
+         return response()->json(['result'=>'success']);   
+    }
+    
     public function importZips()
     {
         $filePath = storage_path('app/zip_codes.csv'); 

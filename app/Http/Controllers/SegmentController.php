@@ -16,16 +16,19 @@ class SegmentController extends Controller
     use ZipIntersectionTrait;
     public function index(Request $request,Datatables $datatables)
     {   
-        if ($request->ajax()) {
-        $query = AthleteActivityZipStat::select(
-                'zip_code',
-                DB::raw('COUNT(*) as total_attempts'),
-                DB::raw('SUM(distance_mi) as total_distance'),
-                DB::raw('MAX(elevation_gain_ft) as highest_elevation'),
-                DB::raw('MAX(max_speed_mph) as highest_speed')
-            )
-            ->where('athlete_id', auth('athlete')->user()->id)
-            ->groupBy('zip_code');
+    if ($request->ajax()) {
+       $subQuery = AthleteActivityZipStat::whereHas('activity')->select(
+        'zip_code',
+        DB::raw('COUNT(*) as total_attempts'),
+        DB::raw('SUM(distance_mi) as total_distance'),
+        DB::raw('MAX(elevation_gain_ft) as highest_elevation'),
+        DB::raw('MAX(max_speed_mph) as highest_speed')
+    )
+    ->where('athlete_id', auth('athlete')->user()->id)
+    ->groupBy('zip_code');
+
+    $query = DB::table(DB::raw("({$subQuery->toSql()}) as stats"))
+        ->mergeBindings($subQuery->getQuery());
             return DataTables::of($query)
 
                 ->addColumn('zipcode', function ($row) {
@@ -33,8 +36,8 @@ class SegmentController extends Controller
                 })
 
                 ->addColumn('action', function ($row) {
-                    return '<a href="'.route('segments.leaderboard', $row->zip_code).'" 
-                                class="btn btn-sm btn-primary">
+                    return '<a href="'.route('account.segments.leaderboard', $row->zip_code).'" 
+                                class="btn btn-sm btn-primary act-view-btn">
                                 View
                             </a>';
                 })
@@ -42,20 +45,14 @@ class SegmentController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return view('segment.passed_zip');
+        return view('account.passed_zip');
     }
     public function leaderboard(Request $request,Datatables $datatables)
     {
         $totalZips = ZipCode::distinct('zip_code')->count('zip_code');
         if ($request->ajax()) {
 
-            // $query = AthleteActivityZipStat::with('athlete')
-            //     ->select(
-            //         'athlete_id',
-            //         DB::raw('COUNT(DISTINCT zip_code) as total_zips')
-            //     )
-            //     ->groupBy('athlete_id');
-              $zipQuery = ZipCode::query();
+            $zipQuery = ZipCode::query();
                 if ($request->country) {
                     $zipQuery->where('country_code', $request->country);
                 }
@@ -66,19 +63,17 @@ class SegmentController extends Controller
 
                 $allCount = $zipQuery->distinct('zip_code')->count('zip_code');
 
-            // $query = AthleteActivityZipStat::with('athlete')
-            // ->join('zip_codes', 'athlete_activity_zip_stats.zip_code', '=', 'zip_codes.zip_code')
-            // ->select(
-            //     'athlete_activity_zip_stats.athlete_id',
-            //     DB::raw('COUNT(DISTINCT athlete_activity_zip_stats.zip_code) as total_zips')
-            // );
-            $query = AthleteActivityZipStat::with('athlete')
-            ->join('zip_codes', 'athlete_activity_zip_stats.zip_code', '=', 'zip_codes.zip_code')
-            ->join('athlete_activities', 'athlete_activity_zip_stats.athlete_activity_id', '=', 'athlete_activities.id')
-            ->select(
-                'athlete_activity_zip_stats.athlete_id',
-                DB::raw('COUNT(DISTINCT athlete_activity_zip_stats.zip_code) as total_zips')
-            );
+     
+               $query = AthleteActivityZipStat::whereHas('activity')->with('athlete')
+                ->join('zip_codes', 'athlete_activity_zip_stats.zip_code', '=', 'zip_codes.zip_code')
+                ->join('athlete_activities', 'athlete_activity_zip_stats.athlete_activity_id', '=', 'athlete_activities.id')
+                ->select(
+                    'athlete_activity_zip_stats.athlete_id',
+                    DB::raw('COUNT(DISTINCT athlete_activity_zip_stats.zip_code) as total_zips'),
+                    DB::raw('SUM(athlete_activity_zip_stats.distance_mi) as total_distance')
+                )
+                ->groupBy('athlete_activity_zip_stats.athlete_id');
+            
             if ($request->country) {
                 $query->where('zip_codes.country_code', $request->country);
             }
@@ -99,7 +94,11 @@ class SegmentController extends Controller
         
             return DataTables::of($query)
                 ->addIndexColumn()
+               ->editColumn('athlete_name', function ($row) {
+                    $name = $row->athlete->first_name . ' ' . $row->athlete->last_name;
 
+                    return '<span class="text-warning me-1"><i class="bi bi-star-fill"></i></span>' . $name;
+                })
                 ->addColumn('athlete_name', function ($row) {
                     $name = $row->athlete->first_name . ' ' . $row->athlete->last_name;
 
@@ -109,9 +108,9 @@ class SegmentController extends Controller
                 ->addColumn('total_zips', function ($row) {
                     return $row->total_zips;
                 })
-                // ->addColumn('percentage', function ($row) use ($totalZips) {
-                //     return $totalZips ? round(($row->total_zips / $totalZips) * 100) : 0;
-                // })
+                 ->editColumn('total_distance', function ($row) {
+                    return $row->total_distance.' mi';
+                })
                ->addColumn('percentage', function ($row) use ($totalZips) {
                     $percent = $totalZips ? ($row->total_zips / $totalZips) * 100 : 0;
                     return '<div class="circular-progress" style="--value:'.$percent.'%">
@@ -125,12 +124,12 @@ class SegmentController extends Controller
                 })
 
                 ->addColumn('action', function ($row) {
-                    return '<a href="'.route('leaderboard', $row->athlete_id).'" class="btn btn-sm btn-primary">View</a>';
+                    return '<a href="'.route('account.segments.leaderboard', $row->athlete_id).'" class="btn btn-sm btn-primary">View</a>';
                 })
 
-                ->order(function ($query) {
-                    $query->orderByDesc(DB::raw('COUNT(DISTINCT zip_code)'));
-                })
+               ->order(function ($query) {
+                        $query->orderByDesc('total_zips');
+                    })
                  ->with([
                     'allCount' => $allCount 
                 ])
@@ -141,19 +140,19 @@ class SegmentController extends Controller
         $allCount = ZipCode::count();
         $countries=ZipCode::pluck('country','country_code')->unique();;
         $states=ZipCode::pluck('state')->unique();
-
-        return view('leader-board')->with(['allCount'=>$allCount,'sportTypes' => AthleteActivity::distinct()->pluck('sport_type'),'countries'=>$countries,'states'=>$states]);
+        $totalAthletes = AthleteActivityZipStat::whereHas('activity')->distinct('athlete_id')->count('athlete_id');
+        return view('account.leader-board')->with(['allCount'=>$allCount,'sportTypes' => AthleteActivity::distinct()->pluck('sport_type'),'countries'=>$countries,'states'=>$states,'totalAthletes'=>$totalAthletes]);
     }
     public function leaderboard_old(Request $request,Datatables $datatables)
     {
         if ($request->ajax()) {
-        $subQuery = AthleteActivityZipStat::select(
+        $subQuery = AthleteActivityZipStat::whereHas('activity')->select(
                 'zip_code',
                 DB::raw('MAX(distance_mi) as max_distance')
             )
             ->groupBy('zip_code');
 
-            $query = AthleteActivityZipStat::with('athlete')
+            $query = AthleteActivityZipStat::whereHas('activity')->with('athlete')
             ->joinSub($subQuery, 'max_table', function ($join) {
                 $join->on('athlete_activity_zip_stats.zip_code', '=', 'max_table.zip_code')
                     ->on('athlete_activity_zip_stats.distance_mi', '=', 'max_table.max_distance');
@@ -183,7 +182,7 @@ class SegmentController extends Controller
                 })
 
                 ->addColumn('action', function ($row) {
-                    return '<a href="'.route('segments.leaderboard',$row->zip_code).'" class="btn btn-sm btn-primary">View</a>';
+                    return '<a href="'.route('account.segments.leaderboard',$row->zip_code).'" class="btn btn-sm btn-primary">View</a>';
                 })
 
                 ->order(function ($query) {
@@ -193,23 +192,33 @@ class SegmentController extends Controller
                 ->rawColumns(['athlete_name','action'])
                 ->make(true);
          }
-        return view('segment.leader_board');
+        return view('account.leader_board');
     }
 
 
     public function zip_leaderboard($zipcode,Datatables $datatables)
     {
+  
+        // $subQuery = AthleteActivityZipStat::select(
+        // 'athlete_id',
+        //     DB::raw('MAX(distance_mi) as max_distance')
+        // )
+        // ->where('zip_code', $zipcode)
+        // ->groupBy('athlete_id');
+  
+        // $query = AthleteActivityZipStat::with('athlete')->whereHas('activity')->distinct('athlete_activity_zip_stats.athlete_id')
+        // ->joinSub($subQuery, 'max_table', function ($join) {
+        //     $join->on('athlete_activity_zip_stats.athlete_id', '=', 'max_table.athlete_id')
+        //          ->on('athlete_activity_zip_stats.distance_mi', '=', 'max_table.max_distance');
+        // })
+        // ->where('athlete_activity_zip_stats.zip_code', $zipcode)
         
-        $subQuery = AthleteActivityZipStat::select(
-                'athlete_id',
-                DB::raw('MAX(distance_mi) as max_distance')
-            )
-            ->where('zip_code', $zipcode)
-            ->groupBy('athlete_id');
-
-        $query = AthleteActivityZipStat::with('athlete')
-        ->where('zip_code', $zipcode)
+        // ->select('athlete_activity_zip_stats.*');
+         $query = AthleteActivityZipStat::whereHas('activity')->where('athlete_id',auth('athlete')->user()->id)->whereHas('activity')
+        ->where('athlete_activity_zip_stats.zip_code', $zipcode)
+        
         ->select('athlete_activity_zip_stats.*');
+        
         return DataTables::of($query)
             ->addIndexColumn()
             ->editColumn('date',function ($row) {
@@ -243,7 +252,7 @@ class SegmentController extends Controller
     {
         $authAthleteId = auth()->user()->id;
 
-        $baseQuery = AthleteActivityZipStat::where('zip_code', $zipcode);
+        $baseQuery = AthleteActivityZipStat::whereHas('activity')->where('zip_code', $zipcode);
 
         $segment = $baseQuery->clone()
             ->with(['athlete','activity.activity_map'])
@@ -251,7 +260,7 @@ class SegmentController extends Controller
             ->orderByDesc('speed_mph')
             ->first();
 
-        $totalAttempts = $baseQuery->clone()->count();
+        $totalAttempts = $baseQuery->clone()->where('athlete_id', $authAthleteId)->count();
 
         $totalPeople = $baseQuery->clone()
             ->distinct('athlete_id')
@@ -276,7 +285,7 @@ class SegmentController extends Controller
         $lowestElevation = (clone $baseQuery)
             ->where('athlete_id', $authAthleteId)
             ->min('elevation_gain_ft');
-        $localLegend = AthleteActivityZipStat::select(
+        $localLegend = AthleteActivityZipStat::whereHas('activity')->select(
             'athlete_id',
             DB::raw('COUNT(*) as total_attempts')
             )
@@ -306,7 +315,7 @@ class SegmentController extends Controller
      
         $selectedZip = $this->getSingleZipFeature($zipcode);
       
-        return view('segment.zip_leader_board', [
+        return view('account.zip_leader_board', [
             'segment'        => $segment,
             'totalAttempts'  => $totalAttempts,
             'totalPeople'    => $totalPeople,
@@ -322,24 +331,24 @@ class SegmentController extends Controller
            
         ]);
     }
-    public function pendingZips(Request $request)
+  public function pendingZips(Request $request)
     {
         $zips = ZipCode::whereNotIn('zip_code', function ($query) {
                 $query->select('zip_code')
                     ->from('athlete_activity_zip_stats');
             })
-            ->paginate(30); 
+            ->paginate(60);
 
         if ($request->ajax()) {
-            if(count($zips))
-            return view('partials.zip-items', compact('zips'))->render();
-             else
-             return '';
+            return response()->json([
+                'html' => view('partials.zip-items', compact('zips'))->render(),
+                'remaining' => $zips->total() - $zips->currentPage() * $zips->perPage()
+            ]);
         }
 
-        $allCount = ZipCode::count();
+        $remaining = $zips->total() - $zips->perPage();
 
-        return view('todo-list', compact('zips', 'allCount'));
+        return view('account.todo-list', compact('zips', 'remaining'));
     }
     // public function pendingZips(Request $request)
     // {
@@ -358,40 +367,129 @@ class SegmentController extends Controller
     //     }
 
     //     if ($request->ajax()) {
-    //         return view('segment.partials.zip-items', compact('zips'))->render();
+    //         return view('account.partials.zip-items', compact('zips'))->render();
     //     }
 
-    //     return view('segment.todo-list', compact('zips'));
+    //     return view('account.todo-list', compact('zips'));
     // }
     public function passedZips(Request $request)
     {
-        $zips =   $passedZips = AthleteActivityZipStat::where('athlete_id', auth('athlete')->id())
-            ->distinct()
-            ->paginate(30);
-       
-        if ($request->ajax()) {
-            return view('partials.zip-items', compact('zips'))->render();
+        $zips  = AthleteActivityZipStat::whereHas('activity')->where('athlete_id', auth('athlete')->id())
+            ->distinct('zip_code')->select('zip_code')
+            ->paginate(60);
+            
+       if ($request->ajax()) {
+            return response()->json([
+                'html' => view('partials.zip-items', compact('zips'))->render(),
+                'remaining' => $zips->total() - $zips->currentPage() * $zips->perPage()
+            ]);
         }
 
-        return view('passed-list', compact('zips'));
+        $remaining = $zips->total() - $zips->perPage();
+
+        return view('account.passed-list', compact('zips', 'remaining'));
     }
+    
+    // public function passedZips(Request $request)
+    // {
+    //     $zips =   $passedZips = AthleteActivityZipStat::where('athlete_id', auth('athlete')->id())
+    //         ->distinct()
+    //         ->paginate(60);
+       
+    //     if ($request->ajax()) {
+    //         return view('partials.zip-items', compact('zips'))->render();
+    //     }
+
+    //     return view('passed-list', compact('zips'));
+    // }
+    // public function exploreMap()
+    // {
+    //     $passedZips = AthleteActivityZipStat::where('athlete_id', auth('athlete')->id())
+    //         ->distinct()
+    //         ->pluck('zip_code')
+    //         ->toArray();
+    //     $activity=AthleteActivity::with(['media','athlete'])
+    //         ->orderBy('date', 'desc')
+    //         ->first();
+    //   $polyline =$activity->activity_map?json_decode($activity->activity_map->map)->summary_polyline:'';
+    //     return view('account.explore-map', compact('passedZips','polyline'));
+    // }
     public function exploreMap()
     {
-        $passedZips = AthleteActivityZipStat::where('athlete_id', auth('athlete')->id())
-            ->distinct()
-            ->pluck('zip_code')
-            ->toArray();
+        $passedZips = AthleteActivityZipStat::whereHas('activity')->where('athlete_id', auth('athlete')->id())
+        ->selectRaw('zip_code, COUNT(*) as total')
+        ->groupBy('zip_code')
+        ->pluck('total', 'zip_code')
+        ->toArray();
+            
         $activity=AthleteActivity::with(['media','athlete'])
             ->orderBy('date', 'desc')
             ->first();
        $polyline =$activity->activity_map?json_decode($activity->activity_map->map)->summary_polyline:'';
-        return view('explore-map', compact('passedZips','polyline'));
+        return view('account.explore-map', compact('passedZips','polyline'));
+    }
+    public function loadMapPassedZips()
+    {
+           $zips = AthleteActivityZipStat::whereHas('activity')->where('athlete_id', auth('athlete')->id())
+            ->distinct()
+            ->pluck('zip_code')
+            ->toArray();
+           $favouriteZip = AthleteActivityZipStat::whereHas('activity')->select(
+            'zip_code',
+            DB::raw('SUM(distance_mi) as total_distance'),
+            DB::raw('COUNT(*) as total_visits')
+        )
+        ->where('athlete_id', auth('athlete')->user()->id)
+        ->groupBy('zip_code')
+        ->orderByDesc('total_distance')
+        ->first();
+      
+        if (empty($zips)) {
+            return response()->json([
+                'type' => 'FeatureCollection',
+                'features' => []
+            ]);
+        }
+
+        $remaining = array_fill_keys($zips, true);
+
+        $features = [];
+        $foundZips = [];
+
+        foreach ($this->zipFeatureStream() as $feature) {
+
+            $zip = $feature['properties']['postcode'] ?? null;
+
+            if (!$zip) continue;
+
+            // 4. Match only needed ZIPs
+            if (isset($remaining[$zip])) {
+
+                $features[] = $feature;
+
+                // Track found ZIP
+                $foundZips[$zip] = true;
+              
+                unset($remaining[$zip]);
+             
+                if (empty($remaining)) {
+                    break;
+                }
+            }
+        }
+
+        return response()->json([
+            'type' => 'FeatureCollection',
+            'features' => $features,
+            'found' => array_keys($foundZips),
+             'favouriteZip' => $favouriteZip->zip_code ?? null
+        ]);
     }
     public function zipsInView(Request $request)
     {
-        $MAX_FEATURES = 300;
+        $MAX_FEATURES = 3000;
         $count = 0;
-        try {
+        // try {
 
             $bbox = [
                 'minLng' => (float)$request->minLng,
@@ -430,9 +528,9 @@ class SegmentController extends Controller
                 if (!is_array($outerRing) || count($outerRing) < 3) {
                     continue;
                 }
-
+              
                 $polyBox = $this->bbox($outerRing);
-               //  dd($polyBox);
+                // dd($polyBox);
                 // bbox intersection check
                 if (
                     $polyBox['maxLng'] < $bbox['minLng'] ||
@@ -453,11 +551,11 @@ class SegmentController extends Controller
                 'features' => $features
             ]);
 
-        } catch (\Throwable $e) {
-            return response()->json([
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        // } catch (\Throwable $e) {
+        //     return response()->json([
+        //         'error' => $e->getMessage()
+        //     ], 500);
+        // }
     }
     public function getSingleZipview(Request $request){
          $selectedZip = $this->getSingleZipFeature($request->zipcode);
@@ -465,7 +563,69 @@ class SegmentController extends Controller
             'selectedZip' => json_decode(json_encode($selectedZip), true)
         ]);
     }
- private function bbox($coordinates)
+  public function getAllZipsInView(Request $request)
+    {
+        try {
+             
+            $north = $request->north;
+            $south = $request->south;
+            $east  = $request->east;
+            $west  = $request->west;
+
+            $features = [];
+
+            foreach ($this->zipFeatureStream() as $feature) {
+
+                if (!isset($feature['geometry']['coordinates'])) continue;
+
+                $geometry = $feature['geometry'];
+
+                $type = $geometry['type'];
+                $coords = $geometry['coordinates'];
+
+                // Get outer ring
+                if ($type === 'Polygon') {
+                    $outerRing = $coords[0] ?? null;
+                } elseif ($type === 'MultiPolygon') {
+                    $outerRing = $coords[0][0] ?? null;
+                } else {
+                    continue;
+                }
+
+                if (!is_array($outerRing)) continue;
+
+                // ✅ FAST BOUND CHECK (exit early)
+                $inside = false;
+
+                foreach ($outerRing as $point) {
+                    [$lng, $lat] = $point;
+
+                    if ($lat >= $south && $lat <= $north && $lng >= $west && $lng <= $east) {
+                        $inside = true;
+                        break; // ✅ stop early
+                    }
+                }
+
+                if (!$inside) continue;
+
+                $features[] = $feature;
+
+                // ✅ LIMIT results (VERY IMPORTANT)
+                if (count($features) > 500) break;
+            }
+
+            return response()->json([
+                'type' => 'FeatureCollection',
+                'features' => $features
+            ]);
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+ private function bbox1($coordinates)
     {
     $minLng = INF;
     $minLat = INF;
@@ -484,6 +644,69 @@ class SegmentController extends Controller
         $minLat = min($minLat, $lat);
         $maxLat = max($maxLat, $lat);
     }
+    }
+    public function getAllZipsInView1(Request $request)
+    {
+    try {
+
+        $north = $request->north;
+        $south = $request->south;
+        $east  = $request->east;
+        $west  = $request->west;
+
+        $features = [];
+
+        foreach ($this->zipFeatureStream() as $feature) {
+
+            if (!isset($feature['geometry']['coordinates'])) continue;
+
+            $geometry = $feature['geometry'];
+
+            $type = $geometry['type'];
+            $coords = $geometry['coordinates'];
+
+            // Get outer ring
+            if ($type === 'Polygon') {
+                $outerRing = $coords[0] ?? null;
+            } elseif ($type === 'MultiPolygon') {
+                $outerRing = $coords[0][0] ?? null;
+            } else {
+                continue;
+            }
+
+            if (!is_array($outerRing)) continue;
+
+            // ✅ FAST BOUND CHECK (exit early)
+            $inside = false;
+
+            foreach ($outerRing as $point) {
+                [$lng, $lat] = $point;
+
+                if ($lat >= $south && $lat <= $north && $lng >= $west && $lng <= $east) {
+                    $inside = true;
+                    break; 
+                }
+            }
+
+            if (!$inside) continue;
+
+            $features[] = $feature;
+
+          
+            if (count($features) > 500) break;
+        }
+
+        return response()->json([
+            'type' => 'FeatureCollection',
+            'features' => $features
+        ]);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'error' => $e->getMessage()
+        ], 500);
+    }
+
 
     return [
         'minLng' => $minLng,
@@ -492,23 +715,23 @@ class SegmentController extends Controller
         'maxLat' => $maxLat,
     ];
 }
-    // private function bbox($coords)
-    // {
-    //     $minLng = $minLat = PHP_INT_MAX;
-    //     $maxLng = $maxLat = PHP_INT_MIN;
+    private function bbox($coords)
+    {
+        $minLng = $minLat = PHP_INT_MAX;
+        $maxLng = $maxLat = PHP_INT_MIN;
 
-    //     foreach ($coords as $point) {
-    //         $lng = $point[0];
-    //         $lat = $point[1];
+        foreach ($coords as $point) {
+            $lng = $point[0];
+            $lat = $point[1];
 
-    //         $minLng = min($minLng, $lng);
-    //         $maxLng = max($maxLng, $lng);
-    //         $minLat = min($minLat, $lat);
-    //         $maxLat = max($maxLat, $lat);
-    //     }
+            $minLng = min($minLng, $lng);
+            $maxLng = max($maxLng, $lng);
+            $minLat = min($minLat, $lat);
+            $maxLat = max($maxLat, $lat);
+        }
 
-    //     return compact('minLng','maxLng','minLat','maxLat');
-    // }
+        return compact('minLng','maxLng','minLat','maxLat');
+    }
 
     private function bboxIntersects($a, $b)
     {

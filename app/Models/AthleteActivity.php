@@ -3,16 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\GeneratesOsmStaticMap;
-use Carbon\Carbon;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\SoftDeletes;
 class AthleteActivity extends Model 
 {
-
-    use GeneratesOsmStaticMap;
+    use SoftDeletes;
+    
     protected $fillable = ['activity_id', 'athlete_id', 'athlete_strava_id', 'name', 'distance', 'moving_time', 'elapsed_time',
      'type', 'sport_type', 'workout_type','elevation','relative_effort','passed_zips','start_location',
-     'average_speed','max_speed','device_name','average_watts','weighted_average_watts','photos','date', 'timezone', 'status','zip_status'];
+     'average_speed','max_speed','device_name','average_watts','weighted_average_watts','photos','date', 'timezone','sync_zip_status', 'status','zip_status'];
     protected $casts = [
         'date' => 'datetime',
         'photos' => 'array',
