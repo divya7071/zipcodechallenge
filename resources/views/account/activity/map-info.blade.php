@@ -64,7 +64,11 @@
         <!-- Time -->
         <span class="drawer-meta">
             <i class="bi bi-clock me-1"></i>
-            {{ \Carbon\Carbon::parse($activity->date)->format('D, M d H:i') }}
+            @php
+            preg_match('/\)\s*(.+)$/', $activity->timezone, $matches);
+            $timezone = $matches[1] ?? 'UTC';
+            @endphp
+            {{ \Carbon\Carbon::parse($activity->date)->setTimezone($timezone)->format('D, M d g:i A') }}
         </span>
 
         <!-- Divider -->

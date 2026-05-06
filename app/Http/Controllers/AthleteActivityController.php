@@ -58,8 +58,14 @@ class AthleteActivityController extends Controller
 
                     return '<span class="badge '.$class.'">'.$row->sport_type.'</span>';
                 })
-                ->editColumn('date',function ($row) {
-                   return $row->date? \Carbon\Carbon::parse($row->date)->format('D, m/d/Y H:i:s'): '-';
+                ->editColumn('date', function ($row) {
+                    preg_match('/\)\s*(.+)$/', $row->timezone, $matches);
+                    $timezone = $matches[1] ?? 'UTC';
+                    return $row->date
+                        ? \Carbon\Carbon::parse($row->date) 
+                            ->setTimezone($timezone)    
+                            ->format('D, m/d/Y g:i A')
+                        : '-';
                 })
                 ->editColumn('moving_time',function ($row) {
                     return gmdate("H:i:s",  $row->moving_time);

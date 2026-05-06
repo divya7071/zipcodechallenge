@@ -274,8 +274,11 @@
 <!-- Activities -->
 <div class="card-box mb-4">
     <h5 class="mb-1">{{$activity->name}}</h5>
-    <small class="text-muted"> @php
-        $date = $activity->local_date
+    <small class="text-muted">
+        @php
+            $date = $activity->local_date; 
+            preg_match('/\)\s*(.+)$/', $activity->timezone, $matches);
+            $timezone = $matches[1] ?? 'UTC';
         @endphp
 
         @if ($date->isToday())
@@ -284,7 +287,8 @@
         Yesterday at {{ $date->format('g:i A') }}
         @else
         {{ $date->format('F j, Y \a\t g:i A') }}
-        @endif</small>
+        @endif
+    </small>
 
     <div class="row mt-3">
         <div class="col-lg-12">
